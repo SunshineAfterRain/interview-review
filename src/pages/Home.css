@@ -21,6 +21,7 @@
   border-bottom: 1px solid var(--glass-border);
   position: relative;
   overflow: hidden;
+  animation: slideInDown 0.5s var(--ease-out);
 }
 
 .app-controls::before {
@@ -56,8 +57,13 @@
   border-radius: var(--radius-md);
   color: var(--text-primary);
   outline: none;
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
   position: relative;
+}
+
+.search-input:hover {
+  border-color: var(--neon-cyan);
+  background: var(--bg-secondary);
 }
 
 .search-input:focus {
@@ -82,11 +88,13 @@
   color: var(--text-muted);
   font-size: 1.2rem;
   pointer-events: none;
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
 }
 
-.search-input:focus + .search-box::after {
+.search-input:focus ~ .search-box::after,
+.search-input:hover ~ .search-box::after {
   color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan);
 }
 
 .difficulty-filter {
@@ -112,12 +120,14 @@
   color: var(--text-primary);
   outline: none;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
   min-width: 150px;
 }
 
 .difficulty-select:hover {
   border-color: var(--neon-cyan);
+  background: var(--bg-secondary);
+  transform: translateY(-1px);
 }
 
 .difficulty-select:focus {
@@ -177,6 +187,12 @@
   background: var(--bg-tertiary);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.questions-header .count:hover {
+  border-color: var(--neon-cyan);
+  box-shadow: var(--shadow-neon-cyan);
 }
 
 .questions-list {
@@ -220,6 +236,46 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
   margin: 1.5rem auto 0;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1.5rem;
+}
+
+.loading-text {
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  animation: pulse-scale 1.5s var(--ease-in-out) infinite;
+}
+
+/* 骨架屏卡片 */
+.question-skeleton {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.question-skeleton .skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.question-skeleton .skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 /* 响应式设计 */
@@ -271,4 +327,35 @@
   .difficulty-select {
     width: 100%;
   }
+}
+
+/* ========================================
+   微交互增强
+   ======================================== */
+
+/* 输入框清除按钮 */
+.search-input::-webkit-search-cancel-button {
+  cursor: pointer;
+  transition: transform var(--transition-instant) var(--ease-out);
+}
+
+.search-input::-webkit-search-cancel-button:hover {
+  transform: scale(1.2);
+}
+
+/* 选择框箭头动画 */
+.difficulty-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300f5ff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.difficulty-select:hover {
+  background-position: right 1rem center;
+}
+
+.difficulty-select:focus {
+  background-position: right 1rem center;
 }

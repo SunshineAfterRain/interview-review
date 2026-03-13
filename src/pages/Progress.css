@@ -54,10 +54,11 @@
   border-radius: var(--radius-md);
   font-weight: 600;
   font-family: var(--font-mono);
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-neon-cyan);
+  cursor: pointer;
 }
 
 .start-link::before {
@@ -80,6 +81,16 @@
 
 .start-link:hover::before {
   left: 100%;
+}
+
+.start-link:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.start-link:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 /* 页面头部 */
@@ -178,6 +189,11 @@
     0 0 20px var(--primary-glow),
     0 0 40px rgba(0, 245, 255, 0.3);
   animation: pulse-glow 2s infinite;
+  transition: transform var(--transition-fast) var(--ease-out);
+}
+
+.overall-percentage:hover {
+  transform: scale(1.05);
 }
 
 .overall-progress-bar {
@@ -230,9 +246,10 @@
   border-radius: var(--radius-md);
   text-align: center;
   border: 1px solid var(--border-color);
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
   position: relative;
   overflow: hidden;
+  cursor: default;
 }
 
 .stat-box::before {
@@ -244,7 +261,7 @@
   height: 2px;
   background: var(--border-glow);
   opacity: 0;
-  transition: opacity var(--transition-normal);
+  transition: opacity var(--transition-fast) var(--ease-out);
 }
 
 .stat-box:hover {
@@ -257,6 +274,11 @@
   opacity: 1;
 }
 
+.stat-box:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
 .stat-number {
   display: block;
   font-size: 2.25rem;
@@ -264,7 +286,7 @@
   font-family: var(--font-mono);
   color: var(--text-primary);
   margin-bottom: 0.5rem;
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
 }
 
 .stat-number.mastered {
@@ -279,6 +301,10 @@
 
 .stat-number.not-started {
   color: var(--text-muted);
+}
+
+.stat-box:hover .stat-number {
+  transform: scale(1.05);
 }
 
 .stat-label {
@@ -314,7 +340,7 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--glass-border);
   padding: 1.5rem;
-  transition: all var(--transition-normal);
+  transition: all var(--transition-fast) var(--ease-out);
   box-shadow: var(--glass-shadow);
   animation: fadeInScale 0.5s ease-out;
   position: relative;
@@ -330,7 +356,7 @@
   height: 100%;
   background: linear-gradient(180deg, var(--neon-cyan), var(--neon-magenta));
   opacity: 0;
-  transition: opacity var(--transition-normal);
+  transition: opacity var(--transition-fast) var(--ease-out);
 }
 
 .category-progress-card:hover {
@@ -343,6 +369,11 @@
 
 .category-progress-card:hover::before {
   opacity: 1;
+}
+
+.category-progress-card:focus-within {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
 .category-progress-header {
@@ -362,6 +393,11 @@
 
 .category-icon {
   font-size: 1.5rem;
+  transition: transform var(--transition-fast) var(--ease-out);
+}
+
+.category-progress-card:hover .category-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .category-name {
@@ -377,6 +413,11 @@
   font-family: var(--font-mono);
   color: var(--neon-cyan);
   text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+  transition: transform var(--transition-fast) var(--ease-out);
+}
+
+.category-progress-card:hover .category-percentage {
+  transform: scale(1.05);
 }
 
 .category-progress-bar {
@@ -426,6 +467,11 @@
   padding: 0.25rem 0.5rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.cat-stat:hover {
+  transform: translateY(-1px);
 }
 
 .cat-stat.mastered {
@@ -455,9 +501,10 @@
   text-decoration: none;
   font-size: 0.9rem;
   font-family: var(--font-mono);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast) var(--ease-out);
   position: relative;
   z-index: 1;
+  cursor: pointer;
 }
 
 .view-category-link:hover {
@@ -465,6 +512,16 @@
   color: var(--neon-cyan);
   box-shadow: var(--shadow-neon-cyan);
   transform: translateX(3px);
+}
+
+.view-category-link:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+.view-category-link:active {
+  transform: translateX(1px) scale(0.98);
 }
 
 /* 学习建议 */
@@ -501,7 +558,7 @@
   font-size: 0.95rem;
   line-height: 1.6;
   border-bottom: 1px solid var(--border-color);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast) var(--ease-out);
 }
 
 .learning-suggestions li:last-child {
@@ -515,7 +572,7 @@
   color: var(--neon-cyan);
   font-weight: bold;
   text-shadow: 0 0 10px var(--neon-cyan);
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast) var(--ease-out);
 }
 
 .learning-suggestions li:hover {
@@ -599,5 +656,94 @@
   .header-desc {
     margin-left: 0;
     margin-top: 0.5rem;
+  }
+}
+
+/* ========================================
+   微交互增强
+   ======================================== */
+
+/* 加载状态 */
+.progress-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.progress-skeleton {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.progress-skeleton .skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.progress-skeleton .skeleton-bar {
+  height: 14px;
+  border-radius: 7px;
+  margin-bottom: 2rem;
+}
+
+.progress-skeleton .skeleton-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.progress-skeleton .skeleton-stat {
+  height: 100px;
+  border-radius: var(--radius-md);
+}
+
+/* 进度更新动画 */
+.progress-updating {
+  animation: pulse-scale 0.6s var(--ease-out);
+}
+
+/* 成就解锁动画 */
+.achievement-unlocked {
+  animation: popIn 0.5s var(--ease-spring);
+}
+
+/* 数字递增动画 */
+.number-increment {
+  animation: countUp 0.8s var(--ease-out);
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 进度条动画增强 */
+.progress-bar-animated .overall-progress-fill,
+.progress-bar-animated .category-progress-fill {
+  animation: progressPulse 2s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 15px rgba(0, 245, 255, 0.6),
+      0 0 30px rgba(0, 245, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 20px rgba(0, 245, 255, 0.8),
+      0 0 40px rgba(0, 245, 255, 0.4);
   }
 }

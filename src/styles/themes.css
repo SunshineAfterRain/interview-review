@@ -2,6 +2,52 @@
    主题系统 - 支持暗色/亮色主题切换
    ======================================== */
 
+/* ========================================
+   微交互变量 - 过渡和动画配置
+   ======================================== */
+:root {
+  /* 过渡时间 */
+  --transition-instant: 50ms;
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+  --transition-slower: 500ms;
+  
+  /* 缓动函数 */
+  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* 响应式断点 */
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+  
+  /* 圆角 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* 字体 */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Z-index 层级 */
+  --z-dropdown: 50;
+  --z-sticky: 100;
+  --z-fixed: 200;
+  --z-modal-backdrop: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-tooltip: 600;
+}
+
 /* 暗色主题（默认） */
 [data-theme="dark"] {
   /* 背景色 */
@@ -226,6 +272,357 @@
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
+}
+
+/* 心跳 */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+/* 摇晃 - 错误状态 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* 弹入 */
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  70% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 滑入 - 从左 */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 滑入 - 从右 */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 滑入 - 从上 */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 滑入 - 从下 */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 骨架屏加载动画 */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* 成功动画 - 打勾 */
+@keyframes checkmark {
+  0% {
+    stroke-dashoffset: 50;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* 波纹扩散 */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* 脉冲缩放 */
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 渐变移动 */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ========================================
+   加载状态动画类
+   ======================================== */
+
+/* 旋转加载器 */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-lg {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+/* 骨架屏 */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+  height: 1.5em;
+  width: 60%;
+  margin-bottom: 1rem;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton-card {
+  height: 200px;
+  border-radius: var(--radius-lg);
+}
+
+/* ========================================
+   状态反馈动画类
+   ======================================== */
+
+/* 成功状态 */
+.success-animation {
+  animation: popIn var(--transition-normal) var(--ease-spring);
+}
+
+.success-pulse {
+  animation: pulse-scale 0.6s var(--ease-out);
+}
+
+/* 错误状态 */
+.error-animation {
+  animation: shake 0.5s var(--ease-out);
+}
+
+/* 警告状态 */
+.warning-pulse {
+  animation: heartbeat 1s var(--ease-in-out);
+}
+
+/* ========================================
+   无障碍优化 - prefers-reduced-motion
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* 保留必要的视觉反馈 */
+  .spinner {
+    animation: none;
+    border-top-color: var(--neon-cyan);
+    opacity: 0.6;
+  }
+  
+  /* 保留焦点状态 */
+  *:focus {
+    outline: 2px solid var(--neon-cyan) !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* ========================================
+   焦点状态优化
+   ======================================== */
+
+/* 全局焦点样式 */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  transition: outline-offset var(--transition-fast);
+}
+
+/* 按钮焦点样式 */
+button:focus-visible,
+.btn:focus-visible,
+.nav-link:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+/* 输入框焦点样式 */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 0;
+}
+
+/* ========================================
+   可点击元素优化
+   ======================================== */
+
+/* 所有可点击元素添加 cursor-pointer */
+button,
+.btn,
+.nav-link,
+a,
+[role="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+.clickable,
+.card-clickable {
+  cursor: pointer;
+}
+
+/* 禁用状态 */
+button:disabled,
+.btn:disabled,
+.disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ========================================
+   悬停微交互
+   ======================================== */
+
+/* 卡片悬停效果 */
+.hover-lift {
+  transition: transform var(--transition-fast) var(--ease-out),
+              box-shadow var(--transition-fast) var(--ease-out);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 按钮悬停效果 */
+.hover-scale {
+  transition: transform var(--transition-instant) var(--ease-out);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.hover-scale:active {
+  transform: scale(0.98);
+}
+
+/* 发光悬停效果 */
+.hover-glow {
+  transition: box-shadow var(--transition-fast) var(--ease-out);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-neon-cyan);
+}
+
+/* 颜色过渡 */
+.hover-color {
+  transition: color var(--transition-fast) var(--ease-out),
+              background-color var(--transition-fast) var(--ease-out),
+              border-color var(--transition-fast) var(--ease-out);
 }
 
 /* ========================================
