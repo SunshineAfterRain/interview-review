@@ -298,16 +298,71 @@ const DeepCloneDemo: React.FC = () => {
 const LogSearchDemo: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [autoScroll, setAutoScroll] = React.useState(true);
+  const [isStreaming, setIsStreaming] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const timerRef = React.useRef<number>();
+  const scrollTopRef = React.useRef(0);
   
-  const logs = React.useMemo(() => 
-    Array.from({ length: 100 }, (_, i) => ({
+  const [logs, setLogs] = React.useState<Array<{
+    id: number;
+    text: string;
+    level: 'INFO' | 'WARN' | 'ERROR';
+    timestamp: number;
+  }>>([]);
+  
+  const itemHeight = 40;
+  const containerHeight = 400;
+  const bufferSize = 5;
+  
+  React.useEffect(() => {
+    const initialLogs = Array.from({ length: 100 }, (_, i) => ({
       id: i,
-      text: `日志条目 #${i + 1} - 用户${['张三', '李四', '王五'][i % 3]}执行了${['登录', '查询', '删除', '更新'][i % 4]}操作 - ${new Date(Date.now() + i * 1000).toLocaleTimeString()}`,
+      text: `日志条目 #${i + 1} - 用户${['张三', '李四', '王五'][i % 3]}执行了${['登录', '查询', '删除', '更新'][i % 4]}操作`,
       level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)] as 'INFO' | 'WARN' | 'ERROR',
-    })),
-    []
-  );
+      timestamp: Date.now() + i * 1000,
+    }));
+    setLogs(initialLogs);
+  }, []);
+  
+  React.useEffect(() => {
+    if (isStreaming) {
+      timerRef.current = window.setInterval(() => {
+        setLogs(prev => {
+          const newLog = {
+            id: prev.length,
+            text: `日志条目 #${prev.length + 1} - 用户${['张三', '李四', '王五'][Math.floor(Math.random() * 3)]}执行了${['登录', '查询', '删除', '更新'][Math.floor(Math.random() * 4)]}操作`,
+            level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)] as 'INFO' | 'WARN' | 'ERROR',
+            timestamp: Date.now(),
+          };
+          return [...prev, newLog];
+        });
+        
+        if (autoScroll && containerRef.current) {
+          containerRef.current.scrollTop = containerRef.current.scrollHeight;
+        }
+      }, 500);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+    
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isStreaming, autoScroll]);
+  
+  const totalHeight = logs.length * itemHeight;
+  const visibleCount = Math.ceil(containerHeight / itemHeight);
+  
+  const startIndex = Math.max(0, Math.floor(scrollTopRef.current / itemHeight) - bufferSize);
+  const endIndex = Math.min(logs.length - 1, startIndex + visibleCount + bufferSize * 2);
+  
+  const visibleLogs = logs.slice(startIndex, endIndex + 1);
+  const offsetY = startIndex * itemHeight;
   
   const matches = React.useMemo(() => {
     if (!searchQuery) return [];
@@ -317,6 +372,7 @@ const LogSearchDemo: React.FC = () => {
     
     logs.forEach((log, logIndex) => {
       let match;
+      regex.lastIndex = 0;
       while ((match = regex.exec(log.text)) !== null) {
         results.push({
           logIndex,
@@ -383,10 +439,8 @@ const LogSearchDemo: React.FC = () => {
   
   const scrollToMatch = (index: number) => {
     if (matches[index] && containerRef.current) {
-      const logElement = containerRef.current.querySelector(`[data-log-id="${matches[index].logIndex}"]`);
-      if (logElement) {
-        logElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
+      const targetScrollTop = matches[index].logIndex * itemHeight;
+      containerRef.current.scrollTop = targetScrollTop;
     }
   };
   
@@ -398,18 +452,23 @@ const LogSearchDemo: React.FC = () => {
     }
   };
   
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    scrollTopRef.current = e.currentTarget.scrollTop;
+  };
+  
   return (
     <div className="interactive-demo">
       <div className="demo-header">
-        <h4>🎯 日志搜索和高亮演示</h4>
+        <h4>🎯 虚拟滚动 + WebSocket实时日志演示</h4>
         <div className="demo-stats">
-          <span>总日志: {logs.length}</span>
-          <span>匹配数: {matches.length}</span>
+          <span>总日志: {logs.length.toLocaleString()}</span>
+          <span>渲染: {visibleLogs.length}</span>
+          <span>内存节省: {((1 - visibleLogs.length / logs.length) * 100).toFixed(1)}%</span>
         </div>
       </div>
       
       <div className="demo-content">
-        <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <input
             type="text"
             placeholder="搜索日志（例如：张三、登录、ERROR）..."
@@ -420,6 +479,7 @@ const LogSearchDemo: React.FC = () => {
             }}
             style={{
               flex: 1,
+              minWidth: '200px',
               padding: '0.75rem',
               fontSize: '1rem',
               border: '2px solid #00f5ff',
@@ -430,93 +490,136 @@ const LogSearchDemo: React.FC = () => {
             }}
           />
           
-          {searchQuery && matches.length > 0 && (
-            <>
-              <button
-                onClick={handlePrevious}
-                disabled={currentIndex === 0}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: currentIndex === 0 ? '#333' : 'linear-gradient(135deg, #00f5ff, #00c5cc)',
-                  border: 'none',
-                  borderRadius: '8px',
-                  color: currentIndex === 0 ? '#666' : '#000',
-                  fontWeight: 'bold',
-                  cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
-                  fontFamily: 'Consolas, Monaco, monospace',
-                }}
-              >
-                ↑ 上一个
-              </button>
-              
-              <span style={{ color: '#00f5ff', fontFamily: 'Consolas, Monaco, monospace', minWidth: '80px', textAlign: 'center' }}>
-                {currentIndex + 1} / {matches.length}
-              </span>
-              
-              <button
-                onClick={handleNext}
-                disabled={currentIndex === matches.length - 1}
-                style={{
-                  padding: '0.5rem 1rem',
-                  background: currentIndex === matches.length - 1 ? '#333' : 'linear-gradient(135deg, #00f5ff, #00c5cc)',
-                  border: 'none',
-                  borderRadius: '8px',
-                  color: currentIndex === matches.length - 1 ? '#666' : '#000',
-                  fontWeight: 'bold',
-                  cursor: currentIndex === matches.length - 1 ? 'not-allowed' : 'pointer',
-                  fontFamily: 'Consolas, Monaco, monospace',
-                }}
-              >
-                ↓ 下一个
-              </button>
-            </>
-          )}
+          <button
+            onClick={() => setIsStreaming(!isStreaming)}
+            style={{
+              padding: '0.75rem 1.5rem',
+              background: isStreaming ? 'linear-gradient(135deg, #ff6b6b, #ff4757)' : 'linear-gradient(135deg, #00ff88, #00cc6a)',
+              border: 'none',
+              borderRadius: '8px',
+              color: '#000',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              fontFamily: 'Consolas, Monaco, monospace',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {isStreaming ? '⏹ 停止推送' : '▶ 开始推送'}
+          </button>
+          
+          <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#e0e0e0', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={autoScroll}
+              onChange={(e) => setAutoScroll(e.target.checked)}
+              style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+            />
+            自动滚动
+          </label>
         </div>
+        
+        {searchQuery && matches.length > 0 && (
+          <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <button
+              onClick={handlePrevious}
+              disabled={currentIndex === 0}
+              style={{
+                padding: '0.5rem 1rem',
+                background: currentIndex === 0 ? '#333' : 'linear-gradient(135deg, #00f5ff, #00c5cc)',
+                border: 'none',
+                borderRadius: '8px',
+                color: currentIndex === 0 ? '#666' : '#000',
+                fontWeight: 'bold',
+                cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
+                fontFamily: 'Consolas, Monaco, monospace',
+              }}
+            >
+              ↑ 上一个
+            </button>
+            
+            <span style={{ color: '#00f5ff', fontFamily: 'Consolas, Monaco, monospace', minWidth: '80px', textAlign: 'center' }}>
+              {currentIndex + 1} / {matches.length}
+            </span>
+            
+            <button
+              onClick={handleNext}
+              disabled={currentIndex === matches.length - 1}
+              style={{
+                padding: '0.5rem 1rem',
+                background: currentIndex === matches.length - 1 ? '#333' : 'linear-gradient(135deg, #00f5ff, #00c5cc)',
+                border: 'none',
+                borderRadius: '8px',
+                color: currentIndex === matches.length - 1 ? '#666' : '#000',
+                fontWeight: 'bold',
+                cursor: currentIndex === matches.length - 1 ? 'not-allowed' : 'pointer',
+                fontFamily: 'Consolas, Monaco, monospace',
+              }}
+            >
+              ↓ 下一个
+            </button>
+          </div>
+        )}
         
         <div
           ref={containerRef}
           style={{
-            height: '300px',
+            height: containerHeight,
             overflow: 'auto',
             border: '2px solid #00f5ff',
             borderRadius: '8px',
             background: '#0a0e17',
+            position: 'relative',
           }}
+          onScroll={handleScroll}
         >
-          {logs.map((log) => (
+          <div style={{ height: totalHeight, position: 'relative' }}>
             <div
-              key={log.id}
-              data-log-id={log.id}
               style={{
-                padding: '0.5rem 1rem',
-                borderBottom: '1px solid rgba(0, 245, 255, 0.1)',
-                fontSize: '0.9rem',
-                fontFamily: 'Consolas, Monaco, monospace',
-                display: 'flex',
-                alignItems: 'center',
-                background: matches[currentIndex]?.logIndex === log.id ? 'rgba(255, 0, 255, 0.1)' : 'transparent',
+                position: 'absolute',
+                top: offsetY,
+                width: '100%',
               }}
             >
-              <span
-                style={{
-                  color: getLevelColor(log.level),
-                  fontWeight: 'bold',
-                  marginRight: '1rem',
-                  minWidth: '60px',
-                }}
-              >
-                [{log.level}]
-              </span>
-              <span style={{ color: '#e0e0e0' }}>
-                {highlightText(log.text, log.id)}
-              </span>
+              {visibleLogs.map((log) => (
+                <div
+                  key={log.id}
+                  data-log-id={log.id}
+                  style={{
+                    height: itemHeight,
+                    padding: '0 1rem',
+                    borderBottom: '1px solid rgba(0, 245, 255, 0.1)',
+                    fontSize: '0.9rem',
+                    fontFamily: 'Consolas, Monaco, monospace',
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: matches[currentIndex]?.logIndex === log.id ? 'rgba(255, 0, 255, 0.1)' : 'transparent',
+                  }}
+                >
+                  <span
+                    style={{
+                      color: getLevelColor(log.level),
+                      fontWeight: 'bold',
+                      marginRight: '1rem',
+                      minWidth: '60px',
+                    }}
+                  >
+                    [{log.level}]
+                  </span>
+                  <span style={{ color: '#e0e0e0', flex: 1 }}>
+                    {highlightText(log.text, log.id)}
+                  </span>
+                  <span style={{ color: '#666', fontSize: '0.8rem', marginLeft: '1rem' }}>
+                    {new Date(log.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
       
       <div className="demo-info">
-        <p>💡 <strong>提示：</strong>输入关键词搜索日志，匹配项会高亮显示，可使用上下按钮导航</p>
+        <p>💡 <strong>提示：</strong>点击"开始推送"模拟WebSocket实时推送日志，虚拟滚动确保海量数据流畅渲染</p>
       </div>
     </div>
   );
