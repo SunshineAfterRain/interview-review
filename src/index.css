@@ -885,6 +885,58 @@ code, pre, .mono {
   color: var(--neon-magenta);
 }
 
+.save-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--primary-color));
+  color: var(--bg-primary);
+  border: none;
+}
+
+.save-btn:hover {
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.delete-saved-btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.5);
+}
+
+.delete-saved-btn:hover {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+}
+
+.saved-indicator {
+  font-size: 0.8rem;
+  color: var(--neon-green);
+  font-family: var(--font-mono);
+  padding: 4px 10px;
+  background: rgba(0, 255, 136, 0.1);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
 .run-icon {
   font-size: 0.8rem;
 }

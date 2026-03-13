@@ -154,6 +154,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <div className="coding-section">
               <CodeRunner
                 key={question.id}
+                questionId={question.id}
                 language={question.codingConfig.language}
                 starterCode={question.codingConfig.starterCode}
                 testCases={question.codingConfig.testCases}

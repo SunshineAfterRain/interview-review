@@ -10,7 +10,7 @@ import './Progress.css';
  * 显示学习统计和进度可视化
  */
 export const Progress: React.FC = () => {
-  const { progress, getProgressStats, wrongQuestions } = useUserStore();
+  const { progress, getProgressStats, wrongQuestions, stats: userStats } = useUserStore();
   const stats = getProgressStats();
   const totalQuestions = allQuestions.length;
 
@@ -18,6 +18,72 @@ export const Progress: React.FC = () => {
   const overallProgress = totalQuestions > 0 
     ? Math.round((stats.mastered / totalQuestions) * 100) 
     : 0;
+
+  // 格式化时间
+  const formatTime = (seconds: number) => {
+    if (seconds < 60) return `${seconds}秒`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}分钟`;
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return minutes > 0 ? `${hours}小时${minutes}分钟` : `${hours}小时`;
+  };
+
+  // 计算学习天数
+  const studyDays = useMemo(() => {
+    const dates = new Set<string>();
+    Object.values(progress).forEach(p => {
+      if (p.lastVisit) {
+        dates.add(new Date(p.lastVisit).toDateString());
+      }
+    });
+    return dates.size;
+  }, [progress]);
+
+  // 最近7天学习统计
+  const weeklyStats = useMemo(() => {
+    const days: { date: string; count: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toDateString();
+      const count = Object.values(progress).filter(
+        p => new Date(p.lastVisit).toDateString() === dateStr
+      ).length;
+      days.push({
+        date: date.toLocaleDateString('zh-CN', { weekday: 'short' }),
+        count
+      });
+    }
+    return days;
+  }, [progress]);
+
+  // 最大连续学习天数
+  const maxStreak = useMemo(() => {
+    const dates = Object.values(progress)
+      .map(p => new Date(p.lastVisit).toDateString())
+      .filter((date, index, self) => self.indexOf(date) === index)
+      .map(d => new Date(d))
+      .sort((a, b) => b.getTime() - a.getTime());
+    
+    if (dates.length === 0) return 0;
+    
+    let maxStreak = 1;
+    let currentStreak = 1;
+    
+    for (let i = 1; i < dates.length; i++) {
+      const diff = Math.floor(
+        (dates[i - 1].getTime() - dates[i].getTime()) / 86400000
+      );
+      if (diff === 1) {
+        currentStreak++;
+        maxStreak = Math.max(maxStreak, currentStreak);
+      } else {
+        currentStreak = 1;
+      }
+    }
+    
+    return maxStreak;
+  }, [progress]);
 
   // 按分类统计进度
   const categoryStats = useMemo(() => {
@@ -161,6 +227,71 @@ export const Progress: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 学习统计仪表盘 */}
+      <div className="stats-dashboard">
+        <div className="dashboard-card streak-card">
+          <div className="dashboard-icon">🔥</div>
+          <div className="dashboard-content">
+            <div className="dashboard-value">{userStats.streak || 0}</div>
+            <div className="dashboard-label">连续学习天数</div>
+          </div>
+          {userStats.streak >= 7 && (
+            <div className="streak-badge">坚持达人!</div>
+          )}
+        </div>
+
+        <div className="dashboard-card">
+          <div className="dashboard-icon">📅</div>
+          <div className="dashboard-content">
+            <div className="dashboard-value">{studyDays}</div>
+            <div className="dashboard-label">累计学习天数</div>
+          </div>
+        </div>
+
+        <div className="dashboard-card">
+          <div className="dashboard-icon">⏱️</div>
+          <div className="dashboard-content">
+            <div className="dashboard-value">{formatTime(userStats.totalTimeSpent || 0)}</div>
+            <div className="dashboard-label">累计学习时长</div>
+          </div>
+        </div>
+
+        <div className="dashboard-card">
+          <div className="dashboard-icon">🏆</div>
+          <div className="dashboard-content">
+            <div className="dashboard-value">{maxStreak}</div>
+            <div className="dashboard-label">最长连续学习</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 最近7天学习统计 */}
+      {weeklyStats.length > 0 && (
+        <div className="weekly-stats-section">
+          <h3>📈 最近7天学习情况</h3>
+          <div className="weekly-chart">
+            {weeklyStats.map((day, index) => (
+              <div key={index} className="weekly-bar-container">
+                <div className="weekly-bar-wrapper">
+                  <div 
+                    className="weekly-bar"
+                    style={{ 
+                      height: day.count > 0 ? `${Math.min(day.count * 20, 100)}%` : '4px',
+                      backgroundColor: day.count > 0 ? 'var(--neon-cyan)' : 'var(--border-color)'
+                    }}
+                  >
+                    {day.count > 0 && (
+                      <span className="weekly-count">{day.count}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="weekly-label">{day.weekday}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 学习路径推荐 */}
       <div className="learning-path-section">

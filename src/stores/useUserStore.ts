@@ -21,6 +21,13 @@ export interface UserStats {
   totalTimeSpent: number;
   streak: number; // 连续学习天数
   lastStudyDate: string;
+  totalStudyDays: number; // 总学习天数
+}
+
+export interface SavedCode {
+  code: string;
+  savedAt: string;
+  language: string;
 }
 
 interface UserState {
@@ -39,6 +46,9 @@ interface UserState {
   // 统计数据
   stats: UserStats;
   
+  // 保存的代码
+  savedCodes: Record<string, SavedCode>;
+  
   // 操作
   updateProgress: (questionId: string, status: LearningStatus) => void;
   toggleFavorite: (questionId: string) => void;
@@ -53,6 +63,11 @@ interface UserState {
   isFavorite: (questionId: string) => boolean;
   isWrongQuestion: (questionId: string) => boolean;
   resetProgress: () => void;
+  
+  // 代码保存相关
+  saveCode: (questionId: string, code: string, language: string) => void;
+  getSavedCode: (questionId: string) => SavedCode | undefined;
+  deleteSavedCode: (questionId: string) => void;
 }
 
 const initialStats: UserStats = {
@@ -62,6 +77,7 @@ const initialStats: UserStats = {
   totalTimeSpent: 0,
   streak: 0,
   lastStudyDate: '',
+  totalStudyDays: 0,
 };
 
 export const useUserStore = create<UserState>()(
@@ -72,6 +88,7 @@ export const useUserStore = create<UserState>()(
       wrongQuestions: [],
       theme: 'dark',
       stats: initialStats,
+      savedCodes: {},
       
       updateProgress: (questionId, status) => {
         set((state) => {
@@ -193,6 +210,31 @@ export const useUserStore = create<UserState>()(
           favorites: [],
           wrongQuestions: [],
           stats: initialStats,
+        });
+      },
+      
+      // 代码保存功能
+      saveCode: (questionId, code, language) => {
+        set((state) => ({
+          savedCodes: {
+            ...state.savedCodes,
+            [questionId]: {
+              code,
+              language,
+              savedAt: new Date().toISOString(),
+            },
+          },
+        }));
+      },
+      
+      getSavedCode: (questionId) => {
+        return get().savedCodes[questionId];
+      },
+      
+      deleteSavedCode: (questionId) => {
+        set((state) => {
+          const { [questionId]: _, ...rest } = state.savedCodes;
+          return { savedCodes: rest };
         });
       },
     }),

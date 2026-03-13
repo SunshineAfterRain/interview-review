@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { TestCase, ScoreResult, ScoreDimension } from '../types/question';
+import { useUserStore } from '../stores/useUserStore';
 
 interface CodeRunnerProps {
+  questionId?: string;
   language: string;
   starterCode: string;
   testCases: TestCase[];
@@ -93,22 +95,59 @@ const analyzeCodeQuality = (code: string): { score: number; feedback: string } =
 };
 
 export const CodeRunner: React.FC<CodeRunnerProps> = ({
+  questionId,
   language,
   starterCode,
   testCases,
   onScoreChange,
 }) => {
+  const { saveCode, getSavedCode, deleteSavedCode } = useUserStore();
   const [code, setCode] = useState(starterCode);
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
+  const [isSaved, setIsSaved] = useState(false);
 
-  // 当 starterCode 变化时重置代码
+  // 当 starterCode 变化时重置代码，或加载已保存的代码
   useEffect(() => {
-    setCode(starterCode);
+    if (questionId) {
+      const saved = getSavedCode(questionId);
+      if (saved) {
+        setCode(saved.code);
+        setIsSaved(true);
+      } else {
+        setCode(starterCode);
+        setIsSaved(false);
+      }
+    } else {
+      setCode(starterCode);
+    }
     setTestResults([]);
     setConsoleOutput([]);
-  }, [starterCode]);
+  }, [starterCode, questionId]);
+
+  // 保存代码
+  const handleSaveCode = useCallback(() => {
+    if (questionId) {
+      saveCode(questionId, code, language);
+      setIsSaved(true);
+    }
+  }, [questionId, code, language, saveCode]);
+
+  // 删除保存的代码
+  const handleDeleteSavedCode = useCallback(() => {
+    if (questionId) {
+      deleteSavedCode(questionId);
+      setCode(starterCode);
+      setIsSaved(false);
+    }
+  }, [questionId, starterCode, deleteSavedCode]);
+
+  // 代码变化时标记为未保存
+  const handleCodeChange = (value: string) => {
+    setCode(value || '');
+    setIsSaved(false);
+  };
 
   const runTests = useCallback(async () => {
     setIsRunning(true);
@@ -218,6 +257,31 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
       <div className="code-runner-header">
         <h4>代码编辑器</h4>
         <div className="code-runner-actions">
+          {isSaved && (
+            <span className="saved-indicator" title="代码已保存">
+              💾 已保存
+            </span>
+          )}
+          {questionId && (
+            <>
+              <button 
+                className="save-btn"
+                onClick={handleSaveCode}
+                title="保存代码到本地"
+              >
+                💾 保存
+              </button>
+              {isSaved && (
+                <button 
+                  className="delete-saved-btn"
+                  onClick={handleDeleteSavedCode}
+                  title="删除保存的代码"
+                >
+                  🗑️ 删除保存
+                </button>
+              )}
+            </>
+          )}
           <button 
             className="run-btn"
             onClick={runTests}
@@ -237,9 +301,22 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
           </button>
           <button 
             className="reset-btn"
-            onClick={() => setCode(starterCode)}
+            onClick={() => {
+              if (questionId) {
+                const saved = getSavedCode(questionId);
+                if (saved) {
+                  setCode(saved.code);
+                  setIsSaved(true);
+                } else {
+                  setCode(starterCode);
+                  setIsSaved(false);
+                }
+              } else {
+                setCode(starterCode);
+              }
+            }}
           >
-            重置代码
+            重置
           </button>
         </div>
       </div>
@@ -249,7 +326,7 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
           height="350px"
           language={language}
           value={code}
-          onChange={(value) => setCode(value || '')}
+          onChange={handleCodeChange}
           theme="vs-dark"
           loading={
             <div className="editor-loading">
