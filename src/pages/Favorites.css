@@ -47,7 +47,7 @@
 
 .browse-link {
   display: inline-block;
-  padding: 0.875rem 2rem;
+  padding: 10px 20px;
   background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
   color: var(--bg-primary);
   text-decoration: none;
@@ -59,6 +59,7 @@
   overflow: hidden;
   box-shadow: var(--shadow-neon-cyan);
   cursor: pointer;
+  min-height: 40px;
 }
 
 .browse-link::before {
@@ -217,7 +218,7 @@
 
 .question-meta {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -290,8 +291,8 @@
 }
 
 .remove-favorite-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
   background: rgba(255, 107, 107, 0.1);
   border: 1px solid rgba(255, 107, 107, 0.3);
@@ -362,7 +363,7 @@
 
 .question-tags {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   flex-wrap: wrap;
   position: relative;
   z-index: 1;

@@ -47,7 +47,7 @@
 
 .start-link {
   display: inline-block;
-  padding: 0.875rem 2rem;
+  padding: 10px 20px;
   background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
   color: var(--bg-primary);
   text-decoration: none;
@@ -59,6 +59,7 @@
   overflow: hidden;
   box-shadow: var(--shadow-neon-cyan);
   cursor: pointer;
+  min-height: 40px;
 }
 
 .start-link::before {
@@ -453,7 +454,7 @@
 
 .category-stats {
   display: flex;
-  gap: 1rem;
+  gap: 12px;
   margin-bottom: 1rem;
   flex-wrap: wrap;
   position: relative;
@@ -491,7 +492,7 @@
 
 .view-category-link {
   display: inline-block;
-  padding: 0.6rem 1.25rem;
+  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -505,6 +506,7 @@
   position: relative;
   z-index: 1;
   cursor: pointer;
+  min-height: 36px;
 }
 
 .view-category-link:hover {

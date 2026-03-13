@@ -92,14 +92,14 @@
 /* 导航菜单样式 */
 .header-nav {
   display: flex;
-  gap: 0.5rem;
+  gap: 12px;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.35rem;
+  gap: 8px;
+  padding: 10px 18px;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -114,6 +114,7 @@
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  min-height: 40px;
 }
 
 .nav-link::before {
@@ -206,14 +207,14 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 12px;
 }
 
 /* 学习进度统计 */
 .progress-mini-stats {
   display: flex;
-  gap: 1.25rem;
-  padding: 0.6rem 1.25rem;
+  gap: 16px;
+  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -265,8 +266,8 @@
 
 /* 主题切换按钮 */
 .theme-toggle-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
@@ -320,8 +321,8 @@
 /* 移动端菜单按钮 */
 .mobile-menu-btn {
   display: none;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
@@ -357,7 +358,7 @@
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-top: 1px solid var(--glass-border);
-  gap: 0.5rem;
+  gap: 12px;
   animation: slideInDown 0.3s var(--ease-out);
 }
 

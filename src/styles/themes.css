@@ -46,6 +46,25 @@
   --z-modal: 400;
   --z-popover: 500;
   --z-tooltip: 600;
+  
+  /* 按钮间距规范 */
+  --btn-gap-xs: 4px;
+  --btn-gap-sm: 8px;
+  --btn-gap-md: 12px;
+  --btn-gap-lg: 16px;
+  --btn-gap-xl: 24px;
+  
+  /* 按钮尺寸规范 */
+  --btn-height-sm: 32px;
+  --btn-height-md: 36px;
+  --btn-height-lg: 40px;
+  --btn-height-xl: 44px;
+  
+  /* 按钮内边距规范 */
+  --btn-padding-sm: 6px 12px;
+  --btn-padding-md: 8px 16px;
+  --btn-padding-lg: 10px 20px;
+  --btn-padding-xl: 12px 24px;
 }
 
 /* 暗色主题（默认） */
