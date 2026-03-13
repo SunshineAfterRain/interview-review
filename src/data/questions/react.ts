@@ -36,19 +36,43 @@ Hooks 的核心原理是基于 Fiber 架构和链表结构：
       {
         language: 'typescript',
         description: '手写简易 useState',
-        code: `let state: any[] = [];
-let index = 0;
+        code: `/**
+ * 手写简易 useState - 理解 Hooks 原理
+ * 
+ * 核心原理：
+ * 1. Hooks 使用数组/链表按顺序存储状态
+ * 2. 每次渲染时，按相同顺序读取状态
+ * 3. 这就是为什么 Hooks 不能在条件语句中使用
+ */
 
-function myUseState<T>(initialValue: T): [T, (value: T) => void] {
+// 模拟 React 的状态存储
+let state: any[] = [];  // 存储所有状态的数组
+let index = 0;          // 当前 hooks 索引
+
+/**
+ * 简易 useState 实现
+ * @param initialValue 初始值
+ * @returns [当前状态, 更新函数]
+ */
+function myUseState<T>(initialValue: T): [T, (value: T | ((prev: T) => T)) => void] {
+  // 保存当前索引，然后递增
+  // 这样下次调用 myUseState 会使用下一个位置
   const currentIndex = index;
   index++;
   
+  // 初始化：如果是第一次调用，存入初始值
   if (state[currentIndex] === undefined) {
     state[currentIndex] = initialValue;
   }
   
-  const setState = (newValue: T) => {
-    state[currentIndex] = newValue;
+  // setState 函数：更新状态并触发重渲染
+  const setState = (newValue: T | ((prev: T) => T)) => {
+    // 支持函数式更新：setState(prev => prev + 1)
+    if (typeof newValue === 'function') {
+      state[currentIndex] = (newValue as Function)(state[currentIndex]);
+    } else {
+      state[currentIndex] = newValue;
+    }
     // 触发重新渲染
     render();
   };
@@ -58,22 +82,44 @@ function myUseState<T>(initialValue: T): [T, (value: T) => void] {
 
 // 使用示例
 function Counter() {
+  // 第一次调用：index = 0，存入 count 的初始值 0
   const [count, setCount] = myUseState(0);
+  // 第二次调用：index = 1，存入 name 的初始值 'React'
   const [name, setName] = myUseState('React');
   
   return (
     <div>
       <p>Count: {count}</p>
       <button onClick={() => setCount(count + 1)}>+1</button>
+      <button onClick={() => setCount(c => c + 1)}>函数式更新+1</button>
       <p>Name: {name}</p>
+      <input 
+        value={name} 
+        onChange={e => setName(e.target.value)} 
+      />
     </div>
   );
 }
 
+// 渲染函数：每次渲染前重置索引
 function render() {
-  index = 0; // 重置索引
+  index = 0; // 重要：重置索引，确保每次渲染按相同顺序读取状态
   ReactDOM.render(<Counter />, document.getElementById('root'));
-}`,
+}
+
+/**
+ * 为什么不能在条件语句中使用 Hooks？
+ * 
+ * 错误示例：
+ * if (condition) {
+ *   const [count, setCount] = myUseState(0); // 有时调用，有时不调用
+ * }
+ * 
+ * 问题：条件语句会导致 Hooks 调用顺序不一致
+ * - 第一次渲染：condition=true，count 存在 index=0
+ * - 第二次渲染：condition=false，跳过这个 Hook
+ * - 后续 Hooks 的索引全部错位，状态混乱
+ */`,
       },
       {
         language: 'typescript',
@@ -84,51 +130,160 @@ function render() {
   useCallback, 
   useMemo, 
   useRef,
-  useReducer 
+  useReducer,
+  useContext,
+  createContext 
 } from 'react';
 
-function Example() {
-  // useState - 状态管理
+/**
+ * useState - 状态管理
+ * 最基础的 Hook，用于在函数组件中添加状态
+ */
+function useStateExample() {
+  // 基础用法
   const [count, setCount] = useState(0);
   
-  // useRef - 保存引用
-  const inputRef = useRef<HTMLInputElement>(null);
-  const renderCount = useRef(0);
+  // 惰性初始化：初始值通过函数计算，只执行一次
+  const [data, setData] = useState(() => {
+    // 复杂计算只会在首次渲染时执行
+    const saved = localStorage.getItem('data');
+    return saved ? JSON.parse(saved) : { name: 'default' };
+  });
   
-  // useMemo - 缓存计算结果
-  const expensiveValue = useMemo(() => {
-    console.log('计算耗时操作');
-    return count * 2;
-  }, [count]);
+  // 函数式更新：基于前一个状态更新
+  const increment = () => setCount(prev => prev + 1);
   
-  // useCallback - 缓存函数
-  const handleClick = useCallback(() => {
-    setCount(c => c + 1);
-  }, []);
-  
-  // useEffect - 副作用
-  useEffect(() => {
-    renderCount.current += 1;
-    console.log('渲染次数:', renderCount.current);
-    
-    // 清理函数
-    return () => {
-      console.log('组件卸载');
-    };
-  }, [count]); // 依赖数组
-  
-  return (
-    <div>
-      <input ref={inputRef} />
-      <p>Count: {count}</p>
-      <p>Double: {expensiveValue}</p>
-      <button onClick={handleClick}>+1</button>
-    </div>
-  );
+  return { count, setCount, data, setData, increment };
 }
 
-// useReducer - 复杂状态管理
-function reducer(state, action) {
+/**
+ * useEffect - 副作用处理
+ * 用于处理副作用：数据获取、订阅、DOM操作等
+ */
+function useEffectExample() {
+  const [count, setCount] = useState(0);
+  const [userId, setUserId] = useState(1);
+  
+  // 1. 每次渲染后都执行
+  useEffect(() => {
+    console.log('组件渲染了');
+  });
+  
+  // 2. 只在挂载时执行一次（空依赖数组）
+  useEffect(() => {
+    console.log('组件挂载了');
+    // 清理函数：组件卸载时执行
+    return () => {
+      console.log('组件卸载了');
+    };
+  }, []);
+  
+  // 3. 依赖变化时执行
+  useEffect(() => {
+    // 模拟 API 请求
+    const fetchData = async () => {
+      const response = await fetch(\`/api/users/\${userId}\`);
+      const data = await response.json();
+      console.log(data);
+    };
+    fetchData();
+    
+    // 清理函数：下次 effect 执行前或卸载时执行
+    return () => {
+      console.log('清理上一次 effect');
+    };
+  }, [userId]); // 只在 userId 变化时重新执行
+  
+  return { count, setCount, userId, setUserId };
+}
+
+/**
+ * useRef - 引用保存
+ * 1. 获取 DOM 元素引用
+ * 2. 保存可变值（修改不触发重渲染）
+ */
+function useRefExample() {
+  // 获取 DOM 引用
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  // 保存可变值（类似类组件的实例属性）
+  const renderCount = useRef(0);
+  const previousValue = useRef<string>();
+  
+  // 记录渲染次数
+  useEffect(() => {
+    renderCount.current += 1;
+  });
+  
+  // 保存前一个值
+  const [value, setValue] = useState('');
+  useEffect(() => {
+    previousValue.current = value;
+  }, [value]);
+  
+  const focusInput = () => {
+    // 访问 DOM 元素
+    inputRef.current?.focus();
+  };
+  
+  return { inputRef, focusInput, renderCount, previousValue, value, setValue };
+}
+
+/**
+ * useMemo - 缓存计算结果
+ * 避免每次渲染都重新计算
+ */
+function useMemoExample({ items, filter }: { items: string[], filter: string }) {
+  // 缓存计算结果，只在依赖变化时重新计算
+  const filteredItems = useMemo(() => {
+    console.log('重新计算过滤结果');
+    return items.filter(item => item.includes(filter));
+  }, [items, filter]);
+  
+  // 缓存复杂对象，避免引用变化
+  const config = useMemo(() => ({
+    headers: { 'Content-Type': 'application/json' },
+    timeout: 5000,
+    retries: 3
+  }), []); // 空依赖：对象永远不会改变
+  
+  return { filteredItems, config };
+}
+
+/**
+ * useCallback - 缓存函数
+ * 避免函数引用变化导致子组件重渲染
+ */
+function useCallbackExample() {
+  const [count, setCount] = useState(0);
+  
+  // 不使用 useCallback：每次渲染都创建新函数
+  const handleClickBad = () => setCount(count + 1);
+  
+  // 使用 useCallback：缓存函数引用
+  const handleClick = useCallback(() => {
+    setCount(c => c + 1); // 使用函数式更新，不依赖 count
+  }, []); // 空依赖：函数永远不会改变
+  
+  // 带依赖的 useCallback
+  const handleClickWithDeps = useCallback((value: number) => {
+    setCount(count + value);
+  }, [count]); // count 变化时，函数会更新
+  
+  return { count, handleClick, handleClickWithDeps };
+}
+
+/**
+ * useReducer - 复杂状态管理
+ * 适合：状态逻辑复杂、多个子值、下一个状态依赖前一个状态
+ */
+type State = { count: number };
+type Action = 
+  | { type: 'increment' } 
+  | { type: 'decrement' } 
+  | { type: 'reset'; payload: number };
+
+function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'increment':
       return { count: state.count + 1 };
@@ -137,22 +292,43 @@ function reducer(state, action) {
     case 'reset':
       return { count: action.payload };
     default:
-      throw new Error();
+      throw new Error('Unknown action');
   }
 }
 
-function Counter() {
+function useReducerExample() {
   const [state, dispatch] = useReducer(reducer, { count: 0 });
   
   return (
-    <>
+    <div>
       Count: {state.count}
       <button onClick={() => dispatch({ type: 'increment' })}>+</button>
       <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
       <button onClick={() => dispatch({ type: 'reset', payload: 0 })}>
-        reset
+        Reset
       </button>
-    </>
+    </div>
+  );
+}
+
+/**
+ * useContext - 上下文消费
+ * 跨组件共享数据，避免 prop drilling
+ */
+const ThemeContext = createContext({
+  theme: 'light',
+  toggleTheme: () => {}
+});
+
+function useContextExample() {
+  // 直接获取 Context 值
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  
+  return (
+    <div className={\`theme-\${theme}\`}>
+      <p>Current theme: {theme}</p>
+      <button onClick={toggleTheme}>Toggle Theme</button>
+    </div>
   );
 }`,
       },

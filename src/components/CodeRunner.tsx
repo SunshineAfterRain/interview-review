@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { TestCase, ScoreResult, ScoreDimension } from '../types/question';
 
@@ -102,6 +102,13 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
+
+  // 当 starterCode 变化时重置代码
+  useEffect(() => {
+    setCode(starterCode);
+    setTestResults([]);
+    setConsoleOutput([]);
+  }, [starterCode]);
 
   const runTests = useCallback(async () => {
     setIsRunning(true);
@@ -244,6 +251,12 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
           value={code}
           onChange={(value) => setCode(value || '')}
           theme="vs-dark"
+          loading={
+            <div className="editor-loading">
+              <span className="loading-spinner"></span>
+              <span>加载编辑器...</span>
+            </div>
+          }
           options={{
             minimap: { enabled: false },
             fontSize: 14,
@@ -254,6 +267,8 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
             wordWrap: 'on',
             fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
             fontLigatures: true,
+            readOnly: false,
+            domReadOnly: false,
           }}
         />
       </div>

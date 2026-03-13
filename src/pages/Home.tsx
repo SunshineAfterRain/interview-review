@@ -6,6 +6,9 @@ import { allQuestions } from '../data';
 import { Category, DIFFICULTY_LABELS } from '../types/question';
 import './Home.css';
 
+// 每页显示的题目数量
+const PAGE_SIZE = 10;
+
 /**
  * 首页组件
  * 显示题目列表和搜索筛选功能
@@ -20,6 +23,7 @@ export const Home: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   // 计算各分类题目数量
   const questionCounts = useMemo(() => {
@@ -47,9 +51,23 @@ export const Home: React.FC = () => {
     });
   }, [activeCategory, searchQuery, selectedDifficulty]);
 
+  // 分页数据
+  const paginatedQuestions = useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    return filteredQuestions.slice(startIndex, endIndex);
+  }, [filteredQuestions, currentPage]);
+
+  // 总页数
+  const totalPages = Math.ceil(filteredQuestions.length / PAGE_SIZE);
+
+  // 当筛选条件改变时重置页码
+  const resetPage = () => setCurrentPage(1);
+
   // 处理分类切换
   const handleCategoryChange = (category: Category | 'all') => {
     setActiveCategory(category);
+    resetPage();
     if (category === 'all') {
       setSearchParams({});
     } else {
@@ -62,6 +80,55 @@ export const Home: React.FC = () => {
     setExpandedQuestion(expandedQuestion === questionId ? null : questionId);
   };
 
+  // 分页导航
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  // 生成页码数组
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const showPages = 5; // 显示的页码数量
+    
+    if (totalPages <= showPages + 2) {
+      // 总页数较少，显示所有页码
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // 总是显示第一页
+      pages.push(1);
+      
+      if (currentPage > 3) {
+        pages.push('...');
+      }
+      
+      // 计算中间显示的页码
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+      
+      if (currentPage <= 3) {
+        end = Math.min(totalPages - 1, showPages - 1);
+      }
+      if (currentPage >= totalPages - 2) {
+        start = Math.max(2, totalPages - showPages + 2);
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (currentPage < totalPages - 2) {
+        pages.push('...');
+      }
+      
+      // 总是显示最后一页
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  };
+
   return (
     <div className="home-page">
       {/* 控制栏 */}
@@ -71,7 +138,7 @@ export const Home: React.FC = () => {
             type="text"
             placeholder="搜索题目或标签..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => { setSearchQuery(e.target.value); resetPage(); }}
             className="search-input"
           />
         </div>
@@ -80,7 +147,7 @@ export const Home: React.FC = () => {
           <label>难度筛选：</label>
           <select
             value={selectedDifficulty}
-            onChange={(e) => setSelectedDifficulty(e.target.value)}
+            onChange={(e) => { setSelectedDifficulty(e.target.value); resetPage(); }}
             className="difficulty-select"
           >
             <option value="all">全部难度</option>
@@ -111,12 +178,12 @@ export const Home: React.FC = () => {
         </div>
 
         <div className="questions-list">
-          {filteredQuestions.length === 0 ? (
+          {paginatedQuestions.length === 0 ? (
             <div className="no-results">
               <p>没有找到匹配的题目</p>
             </div>
           ) : (
-            filteredQuestions.map(question => (
+            paginatedQuestions.map(question => (
               <QuestionCard
                 key={question.id}
                 question={question}
@@ -126,6 +193,47 @@ export const Home: React.FC = () => {
             ))
           )}
         </div>
+
+        {/* 分页组件 */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button
+              className="pagination-btn"
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              上一页
+            </button>
+            
+            <div className="pagination-numbers">
+              {getPageNumbers().map((page, index) => (
+                page === '...' ? (
+                  <span key={`ellipsis-${index}`} className="pagination-ellipsis">...</span>
+                ) : (
+                  <button
+                    key={page}
+                    className={`pagination-number ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => goToPage(page as number)}
+                  >
+                    {page}
+                  </button>
+                )
+              ))}
+            </div>
+            
+            <button
+              className="pagination-btn"
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              下一页
+            </button>
+            
+            <div className="pagination-info">
+              第 {currentPage} / {totalPages} 页，共 {filteredQuestions.length} 题
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

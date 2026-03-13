@@ -516,10 +516,6 @@ code, pre, .mono {
 }
 
 .expand-btn {
-  position: absolute;
-  right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
   background: none;
   border: none;
   font-size: 1rem;
@@ -527,6 +523,18 @@ code, pre, .mono {
   color: var(--text-muted);
   transition: all var(--transition-fast);
   font-family: var(--font-mono);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.expand-btn:hover {
+  color: var(--neon-cyan);
+  background: rgba(0, 245, 255, 0.1);
 }
 
 .question-header:hover .expand-btn {
@@ -855,6 +863,38 @@ code, pre, .mono {
 
 .code-editor-wrapper {
   border-bottom: 1px solid var(--border-color);
+}
+
+.editor-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.editor-loading .loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.answer-placeholder {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--neon-cyan);
 }
 
 /* ========================================
@@ -1642,41 +1682,49 @@ code, pre, .mono {
 
 /* 收藏按钮 */
 .favorite-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   cursor: pointer;
   transition: all var(--transition-normal);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .favorite-btn:hover {
   border-color: var(--neon-magenta);
   color: var(--neon-magenta);
   transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
 }
 
 .favorite-btn.active {
-  background: rgba(255, 0, 255, 0.1);
+  background: rgba(255, 0, 255, 0.15);
   border-color: var(--neon-magenta);
   color: var(--neon-magenta);
-  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
 }
 
 /* 题目卡片头部操作区 */
+.question-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .question-header .header-actions {
   position: absolute;
   right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 1.25rem;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 }
 

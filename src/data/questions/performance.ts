@@ -121,19 +121,36 @@ export const performanceQuestions: Question[] = [
       {
         language: 'javascript',
         description: '虚拟列表实现',
-        code: `class VirtualList {
+        code: `/**
+ * 虚拟列表（Virtual List）实现
+ * 
+ * 核心原理：
+ * 1. 只渲染可视区域内的列表项
+ * 2. 使用绝对定位或 transform 控制位置
+ * 3. 滚动时动态更新渲染的内容
+ * 
+ * 优点：
+ * - 渲染项数量固定，不受数据总量影响
+ * - 内存占用低，DOM 节点少
+ * - 滚动性能稳定
+ */
+class VirtualList {
   constructor(options) {
     const { 
-      container, 
-      itemHeight, 
-      renderItem, 
-      data 
+      container,    // 容器元素
+      itemHeight,   // 每项高度（固定高度）
+      renderItem,   // 渲染函数
+      data,         // 数据数组
+      bufferCount = 2  // 缓冲项数量，避免滚动时出现空白
     } = options;
     
     this.container = container;
     this.itemHeight = itemHeight;
     this.renderItem = renderItem;
     this.data = data;
+    this.bufferCount = bufferCount;
+    
+    // 计算可见项数量
     this.visibleCount = Math.ceil(
       container.clientHeight / itemHeight
     );
@@ -141,48 +158,88 @@ export const performanceQuestions: Question[] = [
     this.init();
   }
   
+  /**
+   * 初始化 DOM 结构
+   */
   init() {
-    // 创建总高度容器
+    // 创建外层容器：撑起总高度，产生滚动条
     this.wrapper = document.createElement('div');
     this.wrapper.style.height = \`\${this.data.length * this.itemHeight}px\`;
     this.wrapper.style.position = 'relative';
+    this.wrapper.style.overflow = 'hidden';
     
-    // 创建可见区域容器
+    // 创建内容容器：放置可见项
     this.content = document.createElement('div');
     this.content.style.position = 'absolute';
     this.content.style.top = '0';
     this.content.style.width = '100%';
+    this.content.style.willChange = 'transform'; // 提示浏览器优化
     
     this.wrapper.appendChild(this.content);
     this.container.appendChild(this.wrapper);
     
-    // 监听滚动
+    // 监听滚动事件
     this.container.addEventListener('scroll', this.handleScroll.bind(this));
     
     // 初始渲染
     this.render();
   }
   
+  /**
+   * 滚动处理：使用 requestAnimationFrame 优化
+   */
   handleScroll() {
-    requestAnimationFrame(() => this.render());
+    // 使用 rAF 确保渲染在浏览器下一帧执行
+    // 避免滚动事件触发过于频繁导致的性能问题
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+    }
+    this.rafId = requestAnimationFrame(() => this.render());
   }
   
+  /**
+   * 渲染可见项
+   */
   render() {
     const scrollTop = this.container.scrollTop;
-    const startIndex = Math.floor(scrollTop / this.itemHeight);
+    
+    // 计算起始索引（减去缓冲项）
+    const startIndex = Math.max(0, 
+      Math.floor(scrollTop / this.itemHeight) - this.bufferCount
+    );
+    
+    // 计算结束索引（加上缓冲项）
     const endIndex = Math.min(
-      startIndex + this.visibleCount + 2,
+      startIndex + this.visibleCount + this.bufferCount * 2,
       this.data.length
     );
     
-    // 更新位置
+    // 使用 transform 移动内容容器（性能优于修改 top）
+    // GPU 加速，不会触发重排
     this.content.style.transform = \`translateY(\${startIndex * this.itemHeight}px)\`;
     
-    // 渲染可见项
+    // 只渲染可见区域的数据
     const visibleItems = this.data.slice(startIndex, endIndex);
     this.content.innerHTML = visibleItems
       .map((item, i) => this.renderItem(item, startIndex + i))
       .join('');
+  }
+  
+  /**
+   * 更新数据
+   */
+  updateData(newData) {
+    this.data = newData;
+    this.wrapper.style.height = \`\${this.data.length * this.itemHeight}px\`;
+    this.render();
+  }
+  
+  /**
+   * 销毁实例
+   */
+  destroy() {
+    this.container.removeEventListener('scroll', this.handleScroll);
+    this.container.innerHTML = '';
   }
 }
 
@@ -190,9 +247,20 @@ export const performanceQuestions: Question[] = [
 const virtualList = new VirtualList({
   container: document.getElementById('list'),
   itemHeight: 50,
-  data: Array.from({ length: 10000 }, (_, i) => ({ id: i, text: \`Item \${i}\` })),
-  renderItem: (item) => \`<div style="height: 50px">\${item.text}</div>\`
-});`,
+  data: Array.from({ length: 10000 }, (_, i) => ({ 
+    id: i, 
+    text: \`Item \${i}\` 
+  })),
+  renderItem: (item, index) => \`
+    <div style="height: 50px; border-bottom: 1px solid #eee; padding: 0 10px; display: flex; align-items: center;">
+      <span>#\${index}</span>
+      <span style="margin-left: 10px;">\${item.text}</span>
+    </div>
+  \`
+});
+
+// 动态添加数据
+// virtualList.updateData([...virtualList.data, { id: 10000, text: 'New Item' }]);`,
       },
     ],
     references: [

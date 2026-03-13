@@ -163,32 +163,36 @@
 
 .header-actions {
   display: flex;
-  gap: 1rem;
+  gap: 16px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .progress-selector {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 10px;
 }
 
 .progress-selector label {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-family: var(--font-mono);
+  white-space: nowrap;
 }
 
 .progress-select {
-  padding: 0.5rem 1rem;
+  padding: 10px 16px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 0.9rem;
   cursor: pointer;
   transition: all var(--transition-fast);
+  min-height: 40px;
+  min-width: 120px;
 }
 
 .progress-select:hover {
@@ -202,8 +206,8 @@
 }
 
 .favorite-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-md);
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
@@ -214,16 +218,18 @@
   align-items: center;
   justify-content: center;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .favorite-btn:hover {
   border-color: var(--neon-magenta);
   color: var(--neon-magenta);
   transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
 }
 
 .favorite-btn.active {
-  background: rgba(255, 0, 255, 0.1);
+  background: rgba(255, 0, 255, 0.15);
   border-color: var(--neon-magenta);
   color: var(--neon-magenta);
   box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);

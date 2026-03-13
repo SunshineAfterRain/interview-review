@@ -153,6 +153,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           {isCodingQuestion && question.codingConfig && (
             <div className="coding-section">
               <CodeRunner
+                key={question.id}
                 language={question.codingConfig.language}
                 starterCode={question.codingConfig.starterCode}
                 testCases={question.codingConfig.testCases}
@@ -215,6 +216,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     value={userAnswer}
                     onChange={(value) => setUserAnswer(value || '')}
                     theme="vs-dark"
+                    loading={
+                      <div className="editor-loading">
+                        <span className="loading-spinner"></span>
+                        <span>加载编辑器...</span>
+                      </div>
+                    }
                     options={{
                       minimap: { enabled: false },
                       fontSize: 14,
@@ -224,10 +231,14 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                       tabSize: 2,
                       wordWrap: 'on',
                       fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
-                      placeholder: '请在此输入你的答案...',
+                      readOnly: false,
+                      domReadOnly: false,
                     }}
                   />
                 </div>
+                {!userAnswer.trim() && (
+                  <p className="answer-placeholder">请在此输入你的答案...</p>
+                )}
                 <button
                   className="submit-answer-btn"
                   onClick={handleTheorySubmit}

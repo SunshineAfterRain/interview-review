@@ -35,52 +35,109 @@ export const javascriptQuestions: Question[] = [
       {
         language: 'javascript',
         description: '闭包实现数据私有化',
-        code: `function createCounter() {
-  let count = 0; // 私有变量
+        code: `/**
+ * 闭包实现数据私有化
+ * 
+ * 核心原理：
+ * 1. createCounter 函数创建了一个局部作用域
+ * 2. count 变量在这个作用域内，外部无法直接访问
+ * 3. 返回的对象中的方法形成了闭包，可以访问 count
+ * 4. 这些方法成为了访问 count 的唯一途径
+ */
+function createCounter() {
+  // 私有变量：存储在函数作用域中，外部无法直接访问
+  let count = 0;
   
+  // 返回一个对象，包含操作 count 的方法
+  // 这些方法形成了闭包，因为它们引用了外部函数的变量
   return {
+    // 增加计数
     increment() {
-      count++;
-      return count;
+      count++; // 通过闭包访问并修改 count
+      return count; // 返回新值
     },
+    
+    // 减少计数
     decrement() {
       count--;
       return count;
     },
+    
+    // 获取当前计数（只读访问）
     getCount() {
+      return count;
+    },
+    
+    // 重置计数
+    reset() {
+      count = 0;
       return count;
     }
   };
 }
 
+// 使用示例
 const counter = createCounter();
 console.log(counter.increment()); // 1
 console.log(counter.increment()); // 2
 console.log(counter.getCount()); // 2
-console.log(counter.count); // undefined - 无法直接访问`,
+console.log(counter.count); // undefined - 无法直接访问私有变量
+console.log(counter.reset()); // 0
+
+// 每次调用 createCounter 都会创建新的闭包作用域
+const counter2 = createCounter();
+console.log(counter2.getCount()); // 0 - 独立的计数器`,
       },
       {
         language: 'javascript',
         description: '闭包实现函数柯里化',
-        code: `function curry(fn) {
+        code: `/**
+ * 函数柯里化（Currying）
+ * 
+ * 概念：将接受多个参数的函数转换为一系列接受单个参数的函数
+ * 
+ * 优点：
+ * 1. 参数复用 - 可以创建预设参数的新函数
+ * 2. 延迟执行 - 收集完所有参数后才执行
+ * 3. 函数组合 - 便于函数式编程
+ */
+function curry(fn) {
   return function curried(...args) {
+    // fn.length 是函数定义时的形参数量
+    // 如果已收集的参数数量 >= 函数需要的参数数量，直接执行
     if (args.length >= fn.length) {
       return fn.apply(this, args);
     }
-    return function(...args2) {
-      return curried.apply(this, args.concat(args2));
+    
+    // 否则返回一个新函数，继续收集参数
+    // 使用闭包保存已收集的 args
+    return function(...moreArgs) {
+      // 递归调用，合并已收集的参数和新参数
+      return curried.apply(this, args.concat(moreArgs));
     };
   };
 }
 
+// 示例：普通的三参数函数
 function add(a, b, c) {
   return a + b + c;
 }
 
+// 转换为柯里化函数
 const curriedAdd = curry(add);
-console.log(curriedAdd(1)(2)(3)); // 6
-console.log(curriedAdd(1, 2)(3)); // 6
-console.log(curriedAdd(1)(2, 3)); // 6`,
+
+// 多种调用方式
+console.log(curriedAdd(1)(2)(3)); // 6 - 每次传一个参数
+console.log(curriedAdd(1, 2)(3)); // 6 - 先传两个，再传一个
+console.log(curriedAdd(1)(2, 3)); // 6 - 先传一个，再传两个
+console.log(curriedAdd(1, 2, 3)); // 6 - 一次传完
+
+// 实际应用：创建预设参数的函数
+const add5 = curriedAdd(5); // 预设第一个参数为 5
+console.log(add5(3)(2)); // 10 = 5 + 3 + 2
+
+const add5and3 = add5(3); // 再预设第二个参数为 3
+console.log(add5and3(2)); // 10 = 5 + 3 + 2`,
       },
       {
         language: 'javascript',
@@ -161,24 +218,68 @@ handleSearch('hello'); // 500ms 后执行`,
     codeExamples: [
       {
         language: 'javascript',
-        description: '事件循环执行顺序示例',
-        code: `console.log('1. 同步代码开始');
+        description: '事件循环执行顺序',
+        code: `/**
+ * JavaScript 事件循环（Event Loop）
+ * 
+ * 执行顺序：
+ * 1. 同步代码 -> 调用栈直接执行
+ * 2. 微任务（Microtask）-> Promise.then, queueMicrotask, MutationObserver
+ * 3. 宏任务（Macrotask）-> setTimeout, setInterval, I/O, UI渲染
+ * 
+ * 每个宏任务执行完后，会清空所有微任务队列
+ */
 
+console.log('1. 同步代码开始'); // 同步
+
+// 宏任务1：setTimeout 回调放入宏任务队列
 setTimeout(() => {
   console.log('2. setTimeout 宏任务');
+  
+  // 宏任务内的微任务
+  Promise.resolve().then(() => {
+    console.log('3. setTimeout 内的微任务');
+  });
 }, 0);
 
+// 微任务1：Promise.then 放入微任务队列
 Promise.resolve()
   .then(() => {
-    console.log('3. Promise 微任务1');
+    console.log('4. 第一个微任务');
   })
   .then(() => {
-    console.log('4. Promise 微任务2');
+    console.log('5. 第一个微任务链式调用');
   });
 
-console.log('5. 同步代码结束');
+// 微任务2
+Promise.resolve().then(() => {
+  console.log('6. 第二个微任务');
+});
 
-// 执行顺序：1 -> 5 -> 3 -> 4 -> 2`,
+// 宏任务2
+setTimeout(() => {
+  console.log('7. 第二个 setTimeout');
+}, 0);
+
+console.log('8. 同步代码结束');
+
+/**
+ * 执行结果：
+ * 1. 同步代码开始
+ * 8. 同步代码结束
+ * 4. 第一个微任务
+ * 6. 第二个微任务
+ * 5. 第一个微任务链式调用
+ * 2. setTimeout 宏任务
+ * 3. setTimeout 内的微任务
+ * 7. 第二个 setTimeout
+ * 
+ * 解释：
+ * - 先执行所有同步代码（1, 8）
+ * - 清空微任务队列（4, 6, 5）注意链式调用的顺序
+ * - 执行第一个宏任务（2），然后清空其产生的微任务（3）
+ * - 执行第二个宏任务（7）
+ */`,
       },
       {
         language: 'javascript',
@@ -269,70 +370,125 @@ console.log('script end');
     codeExamples: [
       {
         language: 'javascript',
-        description: 'ES5 寄生组合继承',
-        code: `function Animal(name) {
+        description: '原型链继承示例',
+        code: `/**
+ * JavaScript 原型链继承
+ * 
+ * 核心概念：
+ * 1. 每个对象都有一个 __proto__ 属性，指向其构造函数的 prototype
+ * 2. 当访问对象的属性时，会沿着原型链向上查找
+ * 3. 原型链的终点是 Object.prototype，再往上就是 null
+ */
+
+// 父类构造函数
+function Animal(name) {
   this.name = name;
-  this.colors = ['black', 'white'];
 }
 
-Animal.prototype.sayName = function() {
-  console.log('My name is', this.name);
+// 在父类原型上添加方法
+Animal.prototype.eat = function() {
+  console.log(\`\${this.name} is eating\`);
 };
 
-function Dog(name, age) {
-  Animal.call(this, name); // 构造函数继承
-  this.age = age;
+// 子类构造函数
+function Dog(name, breed) {
+  // 调用父类构造函数，绑定 this
+  // 相当于 super(name) 的效果
+  Animal.call(this, name);
+  this.breed = breed; // 子类特有的属性
 }
 
-// 寄生组合继承的核心
+// 关键步骤：设置原型链继承
+// Object.create() 创建一个新对象，其 __proto__ 指向 Animal.prototype
 Dog.prototype = Object.create(Animal.prototype);
+
+// 修复 constructor 指向（重要！）
+// 上一步会覆盖 constructor，需要手动修复
 Dog.prototype.constructor = Dog;
 
+// 在子类原型上添加方法
 Dog.prototype.bark = function() {
-  console.log('汪汪汪！');
+  console.log(\`\${this.name} is barking: Woof!\`);
 };
 
-const dog1 = new Dog('旺财', 2);
-const dog2 = new Dog('来福', 3);
+// 使用示例
+const dog = new Dog('Buddy', 'Golden Retriever');
+dog.eat(); // Buddy is eating - 继承自 Animal
+dog.bark(); // Buddy is barking: Woof! - Dog 特有方法
 
-dog1.colors.push('brown');
-console.log(dog1.colors); // ['black', 'white', 'brown']
-console.log(dog2.colors); // ['black', 'white'] - 不共享
-dog1.sayName(); // My name is 旺财
-dog1.bark(); // 汪汪汪！`,
+console.log(dog.name); // Buddy
+console.log(dog.breed); // Golden Retriever
+
+// 检查原型链关系
+console.log(dog instanceof Dog); // true
+console.log(dog instanceof Animal); // true
+console.log(dog instanceof Object); // true
+
+// 原型链结构：
+// dog -> Dog.prototype -> Animal.prototype -> Object.prototype -> null`,
       },
       {
         language: 'javascript',
-        description: 'ES6 class 继承',
-        code: `class Animal {
+        description: 'ES6 Class 继承',
+        code: `/**
+ * ES6 Class 继承
+ * 
+ * ES6 的 class 是语法糖，底层仍然是原型链继承
+ * 但提供了更清晰、更接近传统面向对象语言的写法
+ */
+
+// 父类
+class Animal {
+  // 构造函数
   constructor(name) {
     this.name = name;
-    this.colors = ['black', 'white'];
   }
   
-  sayName() {
-    console.log(\`My name is \${this.name}\`);
+  // 实例方法（定义在原型上）
+  eat() {
+    console.log(\`\${this.name} is eating\`);
+  }
+  
+  // 静态方法（定义在类本身，不是实例上）
+  static create(name) {
+    return new Animal(name);
   }
 }
 
+// 子类继承父类
 class Dog extends Animal {
-  constructor(name, age) {
-    super(name); // 必须先调用 super
-    this.age = age;
+  constructor(name, breed) {
+    // 必须先调用 super()，否则 this 未定义
+    // super() 调用父类的构造函数
+    super(name);
+    this.breed = breed; // 子类特有属性
   }
   
+  // 重写父类方法
+  eat() {
+    // 可以调用父类的实现
+    super.eat();
+    console.log(\`\${this.name} finished eating\`);
+  }
+  
+  // 子类特有方法
   bark() {
-    console.log('汪汪汪！');
+    console.log(\`\${this.name} says: Woof!\`);
   }
 }
 
-const dog = new Dog('旺财', 2);
-dog.sayName(); // My name is 旺财
-dog.bark(); // 汪汪汪！
+// 使用示例
+const dog = new Dog('Buddy', 'Golden Retriever');
+dog.eat(); // Buddy is eating, Buddy finished eating
+dog.bark(); // Buddy says: Woof!
 
-// 检查原型链
+// instanceof 检查原型链
 console.log(dog instanceof Dog); // true
-console.log(dog instanceof Animal); // true`,
+console.log(dog instanceof Animal); // true
+
+// 静态方法继承
+const animal = Animal.create('Generic');
+console.log(animal.name); // Generic`,
       },
     ],
     references: [
@@ -344,7 +500,7 @@ console.log(dog instanceof Animal); // true`,
   {
     id: 'js-004',
     category: 'javascript',
-    questionType: 'coding',
+    questionType: 'theory',
     title: 'Promise的实现原理和手写Promise',
     difficulty: 'hard',
     tags: ['Promise', '异步', 'A+规范'],
@@ -370,119 +526,137 @@ console.log(dog instanceof Animal); // true`,
     codeExamples: [
       {
         language: 'javascript',
-        description: '手写 Promise 核心实现',
-        code: `class MyPromise {
+        description: 'Promise 手写实现',
+        code: `/**
+ * Promise 手写实现（简化版）
+ * 
+ * Promise 是一个状态机，有三种状态：
+ * - pending: 初始状态
+ * - fulfilled: 操作成功
+ * - rejected: 操作失败
+ * 
+ * 状态一旦改变就不可逆（pending -> fulfilled 或 pending -> rejected）
+ */
+class MyPromise {
   constructor(executor) {
+    // 初始状态
     this.state = 'pending';
+    // 成功的值
     this.value = undefined;
+    // 失败的原因
     this.reason = undefined;
+    // 成功回调队列（支持多个 .then）
     this.onFulfilledCallbacks = [];
+    // 失败回调队列
     this.onRejectedCallbacks = [];
     
+    // resolve 函数：将状态改为 fulfilled
     const resolve = (value) => {
+      // 只有 pending 状态才能改变
       if (this.state === 'pending') {
         this.state = 'fulfilled';
         this.value = value;
+        // 执行所有成功回调
         this.onFulfilledCallbacks.forEach(fn => fn());
       }
     };
     
+    // reject 函数：将状态改为 rejected
     const reject = (reason) => {
       if (this.state === 'pending') {
         this.state = 'rejected';
         this.reason = reason;
+        // 执行所有失败回调
         this.onRejectedCallbacks.forEach(fn => fn());
       }
     };
     
+    // 立即执行 executor，捕获同步错误
     try {
       executor(resolve, reject);
-    } catch (err) {
-      reject(err);
+    } catch (error) {
+      reject(error);
     }
   }
   
+  // then 方法：注册成功和失败回调
   then(onFulfilled, onRejected) {
-    // 值的穿透
-    onFulfilled = typeof onFulfilled === 'function' 
-      ? onFulfilled : value => value;
-    onRejected = typeof onRejected === 'function' 
-      ? onRejected : reason => { throw reason };
+    // 参数校验，确保是函数
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : v => v;
+    onRejected = typeof onRejected === 'function' ? onRejected : e => { throw e; };
     
+    // 返回新 Promise，支持链式调用
     const promise2 = new MyPromise((resolve, reject) => {
-      const handle = () => {
+      if (this.state === 'fulfilled') {
+        // 异步执行（模拟微任务）
         setTimeout(() => {
           try {
-            const x = this.state === 'fulfilled' 
-              ? onFulfilled(this.value)
-              : onRejected(this.reason);
-            
-            // Promise 解决过程
-            this.resolvePromise(promise2, x, resolve, reject);
-          } catch (err) {
-            reject(err);
+            const x = onFulfilled(this.value);
+            resolve(x);
+          } catch (error) {
+            reject(error);
           }
-        });
-      };
+        }, 0);
+      }
       
+      if (this.state === 'rejected') {
+        setTimeout(() => {
+          try {
+            const x = onRejected(this.reason);
+            resolve(x);
+          } catch (error) {
+            reject(error);
+          }
+        }, 0);
+      }
+      
+      // pending 状态时，将回调存入队列
       if (this.state === 'pending') {
-        this.onFulfilledCallbacks.push(() => handle());
-        this.onRejectedCallbacks.push(() => handle());
-      } else {
-        handle();
+        this.onFulfilledCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              const x = onFulfilled(this.value);
+              resolve(x);
+            } catch (error) {
+              reject(error);
+            }
+          }, 0);
+        });
+        
+        this.onRejectedCallbacks.push(() => {
+          setTimeout(() => {
+            try {
+              const x = onRejected(this.reason);
+              resolve(x);
+            } catch (error) {
+              reject(error);
+            }
+          }, 0);
+        });
       }
     });
     
     return promise2;
   }
-  
-  resolvePromise(promise2, x, resolve, reject) {
-    if (promise2 === x) {
-      return reject(new TypeError('循环引用'));
-    }
-    
-    if (x instanceof MyPromise) {
-      x.then(resolve, reject);
-    } else if (typeof x === 'object' && x !== null || typeof x === 'function') {
-      let then;
-      try {
-        then = x.then;
-      } catch (err) {
-        return reject(err);
-      }
-      
-      if (typeof then === 'function') {
-        let called = false;
-        try {
-          then.call(x, y => {
-            if (called) return;
-            called = true;
-            this.resolvePromise(promise2, y, resolve, reject);
-          }, r => {
-            if (called) return;
-            called = true;
-            reject(r);
-          });
-        } catch (err) {
-          if (called) return;
-          reject(err);
-        }
-      } else {
-        resolve(x);
-      }
-    } else {
-      resolve(x);
-    }
-  }
-  
-  static resolve(value) {
-    return new MyPromise(resolve => resolve(value));
-  }
-  
-  static reject(reason) {
-    return new MyPromise((_, reject) => reject(reason));
-  }
-}`,
+}
+
+// 使用示例
+const promise = new MyPromise((resolve, reject) => {
+  setTimeout(() => resolve('成功!'), 100);
+});
+
+promise
+  .then(value => {
+    console.log('第一个 then:', value);
+    return '处理后的值';
+  })
+  .then(value => {
+    console.log('第二个 then:', value);
+  });
+
+// 输出：
+// 第一个 then: 成功!
+// 第二个 then: 处理后的值`,
       },
       {
         language: 'javascript',
@@ -526,7 +700,7 @@ p.then(value => {
   {
     id: 'js-005',
     category: 'javascript',
-    questionType: 'coding',
+    questionType: 'theory',
     title: '深拷贝的实现方式',
     difficulty: 'medium',
     tags: ['深拷贝', '递归', '对象复制'],
