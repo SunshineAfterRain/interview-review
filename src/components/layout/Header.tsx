@@ -9,7 +9,7 @@ import './Header.css';
  */
 export const Header: React.FC = () => {
   const location = useLocation();
-  const { theme, setTheme, favorites, getProgressStats } = useUserStore();
+  const { theme, setTheme, favorites, wrongQuestions, getProgressStats } = useUserStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const stats = getProgressStats();
@@ -23,6 +23,7 @@ export const Header: React.FC = () => {
   const navItems = [
     { path: '/', label: '首页', icon: '📚' },
     { path: '/favorites', label: '收藏夹', icon: '⭐', badge: favorites.length },
+    { path: '/wrong-questions', label: '错题本', icon: '📝', badge: wrongQuestions.length },
     { path: '/progress', label: '学习进度', icon: '📊' },
   ];
 

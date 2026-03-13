@@ -235,6 +235,36 @@
   box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
 }
 
+.wrong-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.wrong-btn:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+}
+
+.wrong-btn.active {
+  background: rgba(231, 76, 60, 0.15);
+  border-color: #e74c3c;
+  color: #e74c3c;
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+}
+
 .question-title {
   font-size: 2rem;
   color: var(--text-primary);

@@ -587,6 +587,257 @@
   text-shadow: 0 0 10px var(--neon-magenta);
 }
 
+/* 学习路径推荐 */
+.learning-path-section {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--glass-shadow);
+  animation: fadeInScale 0.6s ease-out;
+}
+
+.learning-path-section h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.section-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.recommended-path {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recommended-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all var(--transition-normal) var(--ease-out);
+}
+
+.recommended-item:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 245, 255, 0.05);
+  transform: translateX(5px);
+}
+
+.recommended-item.learning {
+  border-color: var(--neon-magenta);
+  background: rgba(255, 0, 255, 0.05);
+}
+
+.recommend-rank {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--primary-color));
+  color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.recommend-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.recommend-title {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recommend-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.recommend-difficulty {
+  font-weight: 600;
+}
+
+.recommend-category {
+  color: var(--text-muted);
+}
+
+.learning-badge {
+  padding: 0.15rem 0.5rem;
+  background: rgba(255, 0, 255, 0.2);
+  color: var(--neon-magenta);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.recommend-arrow {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.recommended-item:hover .recommend-arrow {
+  color: var(--neon-cyan);
+  transform: translateX(3px);
+}
+
+.all-completed {
+  text-align: center;
+  padding: 2rem;
+}
+
+.completed-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.all-completed p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* 难度进度 */
+.difficulty-progress-section {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--glass-shadow);
+  animation: fadeInScale 0.65s ease-out;
+}
+
+.difficulty-progress-section h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.difficulty-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.difficulty-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.difficulty-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.difficulty-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.difficulty-count {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.difficulty-progress-bar {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.difficulty-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 错题提醒 */
+.wrong-reminder-section {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(255, 0, 255, 0.05));
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--glass-shadow);
+  animation: fadeInScale 0.7s ease-out;
+}
+
+.wrong-reminder-section h3 {
+  font-size: 1.2rem;
+  color: #e74c3c;
+  font-family: var(--font-mono);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.wrong-reminder-section .section-desc {
+  margin-bottom: 1rem;
+}
+
+.wrong-reminder-section strong {
+  color: #e74c3c;
+  font-weight: 700;
+}
+
+.wrong-reminder-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(231, 76, 60, 0.2);
+  border: 1px solid #e74c3c;
+  border-radius: var(--radius-md);
+  color: #e74c3c;
+  text-decoration: none;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  transition: all var(--transition-fast) var(--ease-out);
+}
+
+.wrong-reminder-link:hover {
+  background: rgba(231, 76, 60, 0.3);
+  transform: translateX(3px);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .progress-page {

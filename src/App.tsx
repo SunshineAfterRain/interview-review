@@ -1,14 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
-import { Home } from './pages/Home';
-import { Favorites } from './pages/Favorites';
-import { Progress } from './pages/Progress';
-import { QuestionDetail } from './pages/QuestionDetail';
 import { useUserStore } from './stores/useUserStore';
 import { allQuestions } from './data';
 import './styles/themes.css';
 import './index.css';
+
+// 懒加载页面组件
+const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
+const Favorites = lazy(() => import('./pages/Favorites').then(m => ({ default: m.Favorites })));
+const Progress = lazy(() => import('./pages/Progress').then(m => ({ default: m.Progress })));
+const WrongQuestions = lazy(() => import('./pages/WrongQuestions').then(m => ({ default: m.WrongQuestions })));
+const QuestionDetail = lazy(() => import('./pages/QuestionDetail').then(m => ({ default: m.QuestionDetail })));
+
+// 加载中组件
+const PageLoader = () => (
+  <div className="page-loader">
+    <div className="loader-spinner"></div>
+    <span className="loader-text">加载中...</span>
+  </div>
+);
 
 /**
  * 主应用组件
@@ -29,12 +40,15 @@ function App() {
 
         {/* 页面内容 */}
         <div className="app-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/progress" element={<Progress />} />
-            <Route path="/questions/:id" element={<QuestionDetail />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/progress" element={<Progress />} />
+              <Route path="/wrong-questions" element={<WrongQuestions />} />
+              <Route path="/questions/:id" element={<QuestionDetail />} />
+            </Routes>
+          </Suspense>
         </div>
 
         {/* 页脚 */}

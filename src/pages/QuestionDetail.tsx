@@ -21,7 +21,10 @@ export const QuestionDetail: React.FC = () => {
     isFavorite, 
     toggleFavorite, 
     getProgress, 
-    updateProgress 
+    updateProgress,
+    isWrongQuestion,
+    addToWrongQuestions,
+    removeFromWrongQuestions
   } = useUserStore();
 
   const [showAnswer, setShowAnswer] = useState(false);
@@ -50,6 +53,7 @@ export const QuestionDetail: React.FC = () => {
   const isCodingQuestion = question.questionType === 'coding';
   const favorite = isFavorite(question.id);
   const progress = getProgress(question.id);
+  const isWrong = isWrongQuestion(question.id);
 
   const handleScoreCalculated = (score: any) => {
     setCodeScore(score);
@@ -120,6 +124,16 @@ export const QuestionDetail: React.FC = () => {
               aria-label={favorite ? '取消收藏' : '收藏'}
             >
               {favorite ? '★' : '☆'}
+            </button>
+
+            {/* 错题本按钮 */}
+            <button
+              className={`wrong-btn ${isWrong ? 'active' : ''}`}
+              onClick={() => isWrong ? removeFromWrongQuestions(question.id) : addToWrongQuestions(question.id)}
+              aria-label={isWrong ? '从错题本移除' : '加入错题本'}
+              title={isWrong ? '从错题本移除' : '加入错题本'}
+            >
+              {isWrong ? '📝' : '🗒️'}
             </button>
           </div>
         </div>

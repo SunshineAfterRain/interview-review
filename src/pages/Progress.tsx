@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useUserStore } from '../stores/useUserStore';
 import { allQuestions } from '../data';
-import { CATEGORIES, Category } from '../types/question';
+import { CATEGORIES, Category, DIFFICULTY_LABELS } from '../types/question';
 import './Progress.css';
 
 /**
@@ -10,7 +10,7 @@ import './Progress.css';
  * 显示学习统计和进度可视化
  */
 export const Progress: React.FC = () => {
-  const { progress, getProgressStats } = useUserStore();
+  const { progress, getProgressStats, wrongQuestions } = useUserStore();
   const stats = getProgressStats();
   const totalQuestions = allQuestions.length;
 
@@ -51,6 +51,48 @@ export const Progress: React.FC = () => {
         stats[category].learning++;
       } else {
         stats[category].mastered++;
+      }
+    });
+
+    return stats;
+  }, [progress]);
+
+  // 学习路径推荐
+  const recommendedPath = useMemo(() => {
+    // 获取未学习的题目，按难度排序
+    const notStarted = allQuestions.filter(q => 
+      !progress[q.id] || progress[q.id].status === 'not_started'
+    );
+    
+    // 获取学习中的题目
+    const learning = allQuestions.filter(q => 
+      progress[q.id]?.status === 'learning'
+    );
+
+    // 按难度排序
+    const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
+    
+    // 推荐顺序：先完成学习中的，再学简单的，然后中等，最后困难
+    const recommended = [
+      ...learning.sort((a, b) => difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]),
+      ...notStarted.sort((a, b) => difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty])
+    ];
+
+    return recommended.slice(0, 5); // 返回前5个推荐
+  }, [progress]);
+
+  // 难度统计
+  const difficultyStats = useMemo(() => {
+    const stats = {
+      easy: { total: 0, mastered: 0 },
+      medium: { total: 0, mastered: 0 },
+      hard: { total: 0, mastered: 0 },
+    };
+
+    allQuestions.forEach(q => {
+      stats[q.difficulty].total++;
+      if (progress[q.id]?.status === 'mastered') {
+        stats[q.difficulty].mastered++;
       }
     });
 
@@ -120,6 +162,90 @@ export const Progress: React.FC = () => {
         </div>
       </div>
 
+      {/* 学习路径推荐 */}
+      <div className="learning-path-section">
+        <h3>🎯 推荐学习路径</h3>
+        <p className="section-desc">根据你的学习进度，为你推荐以下题目</p>
+        
+        <div className="recommended-path">
+          {recommendedPath.map((question, index) => {
+            const isLearning = progress[question.id]?.status === 'learning';
+            const difficulty = DIFFICULTY_LABELS[question.difficulty];
+            
+            return (
+              <Link 
+                key={question.id}
+                to={`/questions/${question.id}`}
+                className={`recommended-item ${isLearning ? 'learning' : ''}`}
+              >
+                <div className="recommend-rank">{index + 1}</div>
+                <div className="recommend-content">
+                  <div className="recommend-title">{question.title}</div>
+                  <div className="recommend-meta">
+                    <span 
+                      className="recommend-difficulty"
+                      style={{ color: difficulty.color }}
+                    >
+                      {difficulty.label}
+                    </span>
+                    <span className="recommend-category">
+                      {CATEGORIES.find(c => c.key === question.category)?.label}
+                    </span>
+                    {isLearning && (
+                      <span className="learning-badge">学习中</span>
+                    )}
+                  </div>
+                </div>
+                <div className="recommend-arrow">→</div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {recommendedPath.length === 0 && (
+          <div className="all-completed">
+            <span className="completed-icon">🎉</span>
+            <p>恭喜！你已经完成了所有题目！</p>
+          </div>
+        )}
+      </div>
+
+      {/* 难度进度 */}
+      <div className="difficulty-progress-section">
+        <h3>📈 难度进度</h3>
+        
+        <div className="difficulty-progress-list">
+          {Object.entries(difficultyStats).map(([key, value]) => {
+            const label = DIFFICULTY_LABELS[key];
+            const percentage = value.total > 0 
+              ? Math.round((value.mastered / value.total) * 100) 
+              : 0;
+
+            return (
+              <div key={key} className="difficulty-progress-item">
+                <div className="difficulty-progress-header">
+                  <span className="difficulty-label" style={{ color: label.color }}>
+                    {label.label}
+                  </span>
+                  <span className="difficulty-count">
+                    {value.mastered} / {value.total}
+                  </span>
+                </div>
+                <div className="difficulty-progress-bar">
+                  <div 
+                    className="difficulty-progress-fill"
+                    style={{ 
+                      width: `${percentage}%`,
+                      backgroundColor: label.color 
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* 分类进度 */}
       <div className="category-progress-section">
         <h3>分类进度</h3>
@@ -175,6 +301,19 @@ export const Progress: React.FC = () => {
         </div>
       </div>
 
+      {/* 错题提醒 */}
+      {wrongQuestions.length > 0 && (
+        <div className="wrong-reminder-section">
+          <h3>⚠️ 错题提醒</h3>
+          <p className="section-desc">
+            你有 <strong>{wrongQuestions.length}</strong> 道题目需要重点复习
+          </p>
+          <Link to="/wrong-questions" className="wrong-reminder-link">
+            查看错题本 →
+          </Link>
+        </div>
+      )}
+
       {/* 学习建议 */}
       <div className="learning-suggestions">
         <h3>💡 学习建议</h3>
@@ -190,6 +329,9 @@ export const Progress: React.FC = () => {
           )}
           {overallProgress >= 80 && (
             <li>太棒了！你已经掌握了大部分题目，继续保持！</li>
+          )}
+          {wrongQuestions.length > 3 && (
+            <li>错题本中有 {wrongQuestions.length} 道题目，建议优先复习</li>
           )}
         </ul>
       </div>
