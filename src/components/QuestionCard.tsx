@@ -1,0 +1,202 @@
+import React, { useState } from 'react';
+import Editor from '@monaco-editor/react';
+import { Question, DIFFICULTY_LABELS, CATEGORIES, ScoreResult } from '../types/question';
+import { AnswerPanel } from './AnswerPanel';
+import { CodeRunner } from './CodeRunner';
+import { ScorePanel } from './ScorePanel';
+
+interface QuestionCardProps {
+  question: Question;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+export const QuestionCard: React.FC<QuestionCardProps> = ({
+  question,
+  isExpanded,
+  onToggle,
+}) => {
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [codeScore, setCodeScore] = useState<ScoreResult | undefined>();
+  const [showScorePanel, setShowScorePanel] = useState(false);
+  
+  const category = CATEGORIES.find(c => c.key === question.category);
+  const difficulty = DIFFICULTY_LABELS[question.difficulty];
+  const isCodingQuestion = question.questionType === 'coding';
+
+  const handleScoreCalculated = (score: ScoreResult) => {
+    setCodeScore(score);
+    setShowScorePanel(true);
+  };
+
+  const handleTheorySubmit = () => {
+    if (userAnswer.trim()) {
+      setShowScorePanel(true);
+    }
+  };
+
+  return (
+    <div className="question-card">
+      <div className="question-header" onClick={onToggle}>
+        <div className="question-meta">
+          <span 
+            className="question-category"
+            style={{ backgroundColor: category?.color }}
+          >
+            {category?.icon} {category?.label}
+          </span>
+          <span 
+            className="question-difficulty"
+            style={{ color: difficulty.color }}
+          >
+            {difficulty.label}
+          </span>
+          {isCodingQuestion && (
+            <span className="question-type-badge coding">
+              编程题
+            </span>
+          )}
+        </div>
+        
+        <h3 className="question-title">{question.title}</h3>
+        
+        <div className="question-tags">
+          {question.tags.map((tag, index) => (
+            <span key={index} className="tag">
+              {tag}
+            </span>
+          ))}
+        </div>
+        
+        <button className="expand-btn">
+          {isExpanded ? '▼' : '▶'}
+        </button>
+      </div>
+      
+      {isExpanded && (
+        <div className="question-content">
+          <div className="question-section">
+            <h4>题目：</h4>
+            <p>{question.question}</p>
+          </div>
+          
+          {/* 编程题 */}
+          {isCodingQuestion && question.codingConfig && (
+            <div className="coding-section">
+              <CodeRunner
+                language={question.codingConfig.language}
+                starterCode={question.codingConfig.starterCode}
+                testCases={question.codingConfig.testCases}
+                scoreDimensions={question.scoreDimensions}
+                onScoreChange={handleScoreCalculated}
+              />
+              
+              {showScorePanel && codeScore && (
+                <ScorePanel
+                  score={codeScore}
+                  questionType="coding"
+                />
+              )}
+              
+              <div className="question-actions">
+                <button
+                  className="show-answer-btn"
+                  onClick={() => setShowAnswer(!showAnswer)}
+                >
+                  {showAnswer ? '隐藏参考答案' : '查看参考答案'}
+                </button>
+              </div>
+              
+              {showAnswer && (
+                <div className="reference-answer">
+                  <h4>参考答案：</h4>
+                  <div className="code-editor-container">
+                    <Editor
+                      height="300px"
+                      language={question.codingConfig.language}
+                      value={question.answer}
+                      theme="vs-dark"
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        lineNumbers: 'on',
+                        scrollBeyondLastLine: false,
+                        automaticLayout: true,
+                        tabSize: 2,
+                        wordWrap: 'on',
+                        readOnly: true,
+                        fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* 理论题 */}
+          {!isCodingQuestion && (
+            <>
+              <div className="user-answer-section">
+                <h4>你的答案：</h4>
+                <div className="answer-editor-container">
+                  <Editor
+                    height="200px"
+                    language="markdown"
+                    value={userAnswer}
+                    onChange={(value) => setUserAnswer(value || '')}
+                    theme="vs-dark"
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 14,
+                      lineNumbers: 'on',
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      tabSize: 2,
+                      wordWrap: 'on',
+                      fontFamily: "'Fira Code', 'JetBrains Mono', 'Consolas', monospace",
+                      placeholder: '请在此输入你的答案...',
+                    }}
+                  />
+                </div>
+                <button
+                  className="submit-answer-btn"
+                  onClick={handleTheorySubmit}
+                  disabled={!userAnswer.trim()}
+                >
+                  提交答案并评分
+                </button>
+              </div>
+              
+              {showScorePanel && (
+                <ScorePanel
+                  userAnswer={userAnswer}
+                  correctAnswer={question.answer}
+                  questionType="theory"
+                />
+              )}
+              
+              <div className="question-actions">
+                <button
+                  className="show-answer-btn"
+                  onClick={() => setShowAnswer(!showAnswer)}
+                >
+                  {showAnswer ? '隐藏参考答案' : '查看参考答案'}
+                </button>
+              </div>
+              
+              {showAnswer && (
+                <AnswerPanel
+                  answer={question.answer}
+                  codeExamples={question.codeExamples}
+                  references={question.references}
+                />
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
