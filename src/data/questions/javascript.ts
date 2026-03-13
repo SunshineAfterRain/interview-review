@@ -84,6 +84,7 @@ console.log(curriedAdd(1)(2, 3)); // 6`,
       {
         language: 'javascript',
         description: '闭包实现防抖函数',
+        interactiveDemo: 'debounce',
         code: `function debounce(fn, delay) {
   let timer = null;
   
@@ -551,6 +552,7 @@ p.then(value => {
       {
         language: 'javascript',
         description: '完整深拷贝实现',
+        interactiveDemo: 'deep-clone',
         code: `function deepClone(obj, hash = new WeakMap()) {
   // null 或 undefined
   if (obj === null || obj === undefined) return obj;

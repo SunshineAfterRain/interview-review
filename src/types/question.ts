@@ -8,6 +8,7 @@ export interface CodeExample {
   language: string;
   code: string;
   description?: string;
+  interactiveDemo?: string; // 交互式演示的key
 }
 
 // 编程题测试用例

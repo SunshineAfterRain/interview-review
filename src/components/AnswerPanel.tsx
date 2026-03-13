@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { CodeExample } from '../types/question';
+import { InteractiveDemo } from './InteractiveDemo';
 
 interface AnswerPanelProps {
   answer: string;
@@ -331,6 +332,12 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
                 sandbox="allow-scripts allow-same-origin"
                 title="Code Preview"
               />
+            </div>
+          )}
+          
+          {codeExamples[activeCodeIndex]?.interactiveDemo && (
+            <div className="interactive-demo-container">
+              <InteractiveDemo type={codeExamples[activeCodeIndex].interactiveDemo!} />
             </div>
           )}
         </div>

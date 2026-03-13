@@ -1548,3 +1548,76 @@ code, pre, .mono {
 .console-messages::-webkit-scrollbar-thumb:hover {
   background: var(--neon-cyan);
 }
+
+/* ========================================
+   交互式演示样式
+   ======================================== */
+
+.interactive-demo-container {
+  margin-top: 1.5rem;
+  border: 2px solid var(--neon-cyan);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.interactive-demo {
+  padding: 1.5rem;
+}
+
+.demo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.demo-header h4 {
+  color: var(--neon-cyan);
+  font-size: 1.1rem;
+  font-family: var(--font-mono);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-stats {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+}
+
+.demo-stats span {
+  color: var(--text-secondary);
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 245, 255, 0.1);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+}
+
+.demo-content {
+  margin-top: 1rem;
+}
+
+.demo-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 245, 255, 0.05);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--neon-cyan);
+}
+
+.demo-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.demo-info strong {
+  color: var(--neon-cyan);
+}

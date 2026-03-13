@@ -282,6 +282,7 @@ function StreamingText({ stream }: { stream: ReadableStream }) {
       {
         language: 'typescript',
         description: '虚拟滚动实现（支持动态高度）',
+        interactiveDemo: 'virtual-scroll',
         code: `import React, { useState, useRef, useEffect, useMemo } from 'react';
 
 interface VirtualListProps<T> {
