@@ -41,7 +41,8 @@ export const Progress: React.FC = () => {
 
   // 最近7天学习统计
   const weeklyStats = useMemo(() => {
-    const days: { date: string; count: number }[] = [];
+    const days: { weekday: string; count: number }[] = [];
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
@@ -50,7 +51,7 @@ export const Progress: React.FC = () => {
         p => new Date(p.lastVisit).toDateString() === dateStr
       ).length;
       days.push({
-        date: date.toLocaleDateString('zh-CN', { weekday: 'short' }),
+        weekday: weekdays[date.getDay()],
         count
       });
     }
@@ -277,7 +278,7 @@ export const Progress: React.FC = () => {
                   <div 
                     className="weekly-bar"
                     style={{ 
-                      height: day.count > 0 ? `${Math.min(day.count * 20, 100)}%` : '4px',
+                      height: day.count > 0 ? `${Math.min(day.count * 20 + 10, 100)}px` : '4px',
                       backgroundColor: day.count > 0 ? 'var(--neon-cyan)' : 'var(--border-color)'
                     }}
                   >
