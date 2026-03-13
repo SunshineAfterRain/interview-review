@@ -1,23 +1,12 @@
 /* ========================================
-   首页样式
+   首页样式 - 现代化玻璃态设计
    ======================================== */
 
 .home-page {
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.4s ease-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 控制栏 */
+/* 控制栏 - 玻璃态效果 */
 .app-controls {
   max-width: 1400px;
   margin: 0 auto;
@@ -26,18 +15,40 @@
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.app-controls::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--neon-cyan), 
+    var(--neon-magenta), 
+    var(--neon-cyan), 
+    transparent
+  );
+  opacity: 0.5;
 }
 
 .search-box {
   flex: 1;
   min-width: 250px;
+  position: relative;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.25rem;
   font-size: 0.95rem;
   font-family: var(--font-mono);
   background: var(--bg-tertiary);
@@ -46,15 +57,36 @@
   color: var(--text-primary);
   outline: none;
   transition: all var(--transition-normal);
+  position: relative;
 }
 
 .search-input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-glow), var(--shadow-glow);
+  border-color: var(--neon-cyan);
+  box-shadow: 
+    0 0 0 3px var(--primary-glow),
+    var(--shadow-neon-cyan);
+  background: var(--bg-secondary);
 }
 
 .search-input::placeholder {
   color: var(--text-muted);
+}
+
+/* 搜索框图标效果 */
+.search-box::after {
+  content: '⌕';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  pointer-events: none;
+  transition: all var(--transition-normal);
+}
+
+.search-input:focus + .search-box::after {
+  color: var(--neon-cyan);
 }
 
 .difficulty-filter {
@@ -71,7 +103,7 @@
 }
 
 .difficulty-select {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.25rem;
   font-size: 0.95rem;
   font-family: var(--font-mono);
   background: var(--bg-tertiary);
@@ -81,16 +113,24 @@
   outline: none;
   cursor: pointer;
   transition: all var(--transition-normal);
+  min-width: 150px;
+}
+
+.difficulty-select:hover {
+  border-color: var(--neon-cyan);
 }
 
 .difficulty-select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-glow);
+  border-color: var(--neon-cyan);
+  box-shadow: 
+    0 0 0 3px var(--primary-glow),
+    var(--shadow-neon-cyan);
 }
 
 .difficulty-select option {
   background: var(--bg-secondary);
   color: var(--text-primary);
+  padding: 0.5rem;
 }
 
 /* 题目容器 */
@@ -103,66 +143,91 @@
 }
 
 .questions-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  animation: fadeInScale 0.5s ease-out;
 }
 
 .questions-header h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: var(--text-primary);
   font-family: var(--font-mono);
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .questions-header h2::before {
   content: '>';
   color: var(--neon-cyan);
   animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
+  font-weight: bold;
+  text-shadow: 0 0 10px var(--neon-cyan);
 }
 
 .questions-header .count {
   color: var(--text-muted);
   font-size: 1rem;
   font-weight: 400;
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
 }
 
 .questions-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
+/* 空状态 - 玻璃态卡片 */
 .no-results {
   text-align: center;
   padding: 4rem 2rem;
   color: var(--text-muted);
   font-size: 1.1rem;
   font-family: var(--font-mono);
-  background: var(--bg-card);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border-radius: var(--radius-lg);
-  border: 1px dashed var(--border-color);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  animation: fadeInScale 0.6s ease-out;
 }
 
 .no-results::before {
   content: '[404]';
   display: block;
-  font-size: 2rem;
+  font-size: 3rem;
   color: var(--neon-magenta);
   margin-bottom: 1rem;
+  text-shadow: 
+    0 0 10px var(--neon-magenta),
+    0 0 20px var(--neon-magenta);
+  animation: neon-flicker 3s infinite;
+}
+
+.no-results::after {
+  content: '';
+  display: block;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+  margin: 1.5rem auto 0;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
   .app-controls {
     padding: 1rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .questions-container {
@@ -171,5 +236,39 @@
 
   .questions-header h2 {
     font-size: 1.25rem;
+  }
+
+  .search-input,
+  .difficulty-select {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .no-results {
+    padding: 3rem 1.5rem;
+  }
+
+  .no-results::before {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    min-width: 100%;
+  }
+
+  .difficulty-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .difficulty-select {
+    width: 100%;
   }
 }

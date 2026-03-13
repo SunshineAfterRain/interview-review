@@ -6,39 +6,39 @@
 [data-theme="dark"] {
   /* 背景色 */
   --bg-primary: #0a0e17;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1a2332;
-  --bg-card: #151c2c;
+  --bg-secondary: #0f1520;
+  --bg-tertiary: #151d2e;
+  --bg-card: rgba(15, 21, 32, 0.7);
   --bg-hover: #1e293b;
   
   /* 霓虹色彩 */
   --neon-cyan: #00f5ff;
   --neon-magenta: #ff00ff;
   --neon-green: #00ff88;
-  --neon-yellow: #ffff00;
+  --neon-yellow: #ffd93d;
   --neon-orange: #ff6b35;
   --neon-purple: #bf00ff;
   --neon-blue: #00d4ff;
   
   /* 主题色 */
   --primary-color: var(--neon-cyan);
-  --primary-glow: rgba(0, 245, 255, 0.3);
+  --primary-glow: rgba(0, 245, 255, 0.4);
   --secondary-color: var(--neon-purple);
   --accent-color: var(--neon-green);
   
   /* 文字颜色 */
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0aec0;
   --text-muted: #64748b;
   
   /* 边框和分隔线 */
-  --border-color: rgba(0, 245, 255, 0.15);
-  --border-glow: rgba(0, 245, 255, 0.3);
+  --border-color: rgba(0, 245, 255, 0.2);
+  --border-glow: rgba(0, 245, 255, 0.5);
   
   /* 状态颜色 */
   --success-color: var(--neon-green);
   --warning-color: var(--neon-yellow);
-  --error-color: #ff4757;
+  --error-color: #ff6b6b;
   --info-color: var(--neon-blue);
   
   /* 阴影 */
@@ -46,11 +46,20 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 20px var(--primary-glow);
+  --shadow-neon-cyan: 0 0 20px rgba(0, 245, 255, 0.3), 0 0 40px rgba(0, 245, 255, 0.1);
+  --shadow-neon-magenta: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(255, 0, 255, 0.1);
+  --shadow-neon-green: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(0, 255, 136, 0.1);
+  
+  /* 玻璃态效果 */
+  --glass-bg: rgba(15, 21, 32, 0.6);
+  --glass-border: rgba(0, 245, 255, 0.15);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   
   /* 背景渐变 */
   --bg-gradient: 
-    radial-gradient(ellipse at top, rgba(0, 245, 255, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(191, 0, 255, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse at top, rgba(0, 245, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(191, 0, 255, 0.05) 0%, transparent 50%);
 }
 
 /* 亮色主题 */
@@ -59,12 +68,12 @@
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
-  --bg-card: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.8);
   --bg-hover: #e2e8f0;
   
   /* 主题色 */
   --primary-color: #0891b2;
-  --primary-glow: rgba(8, 145, 178, 0.2);
+  --primary-glow: rgba(8, 145, 178, 0.3);
   --secondary-color: #7c3aed;
   --accent-color: #10b981;
   
@@ -74,8 +83,8 @@
   --text-muted: #94a3b8;
   
   /* 边框和分隔线 */
-  --border-color: rgba(8, 145, 178, 0.2);
-  --border-glow: rgba(8, 145, 178, 0.3);
+  --border-color: #e2e8f0;
+  --border-glow: rgba(8, 145, 178, 0.4);
   
   /* 状态颜色 */
   --success-color: #10b981;
@@ -88,11 +97,20 @@
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
   --shadow-glow: 0 0 20px var(--primary-glow);
+  --shadow-neon-cyan: 0 0 20px rgba(8, 145, 178, 0.2), 0 0 40px rgba(8, 145, 178, 0.1);
+  --shadow-neon-magenta: 0 0 20px rgba(124, 58, 237, 0.2), 0 0 40px rgba(124, 58, 237, 0.1);
+  --shadow-neon-green: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1);
+  
+  /* 玻璃态效果 */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(8, 145, 178, 0.15);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   
   /* 背景渐变 */
   --bg-gradient: 
-    radial-gradient(ellipse at top, rgba(8, 145, 178, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at top, rgba(8, 145, 178, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
   
   /* 亮色主题特殊变量 */
   --neon-cyan: #0891b2;
@@ -109,11 +127,156 @@
   transition: background-color 0.3s ease, 
               color 0.3s ease, 
               border-color 0.3s ease,
-              box-shadow 0.3s ease;
+              box-shadow 0.3s ease,
+              transform 0.2s ease;
 }
 
 /* 禁用代码编辑器的主题过渡，避免性能问题 */
 .monaco-editor,
 .monaco-editor * {
   transition: none !important;
+}
+
+/* ========================================
+   全局动画关键帧
+   ======================================== */
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 淡入缩放 */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 浮动动画 */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* 脉冲发光 */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--primary-glow), 0 0 60px var(--primary-glow);
+  }
+}
+
+/* 霓虹闪烁 */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow: 
+      0 0 5px var(--neon-cyan),
+      0 0 10px var(--neon-cyan),
+      0 0 20px var(--neon-cyan),
+      0 0 40px var(--neon-cyan);
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+    opacity: 0.8;
+  }
+}
+
+/* 渐变流动 */
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 光泽扫过 */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 光标闪烁 */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* 旋转 */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 弹跳 */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* ========================================
+   玻璃态卡片基础样式
+   ======================================== */
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  transition: all var(--transition-normal);
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-neon-cyan);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   霓虹效果工具类
+   ======================================== */
+
+.neon-text-cyan {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+}
+
+.neon-text-magenta {
+  color: var(--neon-magenta);
+  text-shadow: 0 0 10px var(--neon-magenta), 0 0 20px var(--neon-magenta);
+}
+
+.neon-text-green {
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+}
+
+.neon-border {
+  border: 1px solid var(--neon-cyan);
+  box-shadow: 
+    0 0 5px var(--neon-cyan),
+    inset 0 0 5px rgba(0, 245, 255, 0.1);
+}
+
+.neon-border-magenta {
+  border: 1px solid var(--neon-magenta);
+  box-shadow: 
+    0 0 5px var(--neon-magenta),
+    inset 0 0 5px rgba(255, 0, 255, 0.1);
 }
