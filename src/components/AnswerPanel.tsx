@@ -50,6 +50,20 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
     const code = getCurrentCode();
     const logs: ConsoleMessage[] = [];
     
+    // 检查是否包含import/export语句
+    const hasModules = /\b(import|export)\b/.test(code);
+    
+    if (hasModules) {
+      logs.push({
+        type: 'error',
+        message: '检测到ES6模块语法（import/export）。\n\n这是示例代码，用于展示概念。在实际项目中，这些代码需要通过构建工具（如Vite、Webpack）编译后才能运行。\n\n请查看代码示例学习用法，或复制到您的项目中运行。',
+        timestamp: Date.now(),
+      });
+      setConsoleMessages(logs);
+      setIsRunning(false);
+      return;
+    }
+    
     const customConsole = {
       log: (...args: any[]) => {
         logs.push({
@@ -90,9 +104,16 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
     };
 
     try {
+      // 移除TypeScript类型注解（简单处理）
+      let processedCode = code
+        .replace(/:\\s*(string|number|boolean|any|void|never|object|Function|Array<[^>]+>|Map<[^>]+>|Set<[^>]+>|Promise<[^>]+>|React\.[A-Za-z]+|[A-Z][a-zA-Z]+)/g, '')
+        .replace(/<[^>]+>/g, '') // 移除泛型
+        .replace(/interface\s+\w+\s*\{[^}]*\}/g, '') // 移除interface
+        .replace(/type\s+\w+\s*=\s*[^;]+;/g, ''); // 移除type定义
+      
       const wrappedCode = `
         (function(console) {
-          ${code}
+          ${processedCode}
         })
       `;
       
@@ -102,14 +123,14 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
       if (logs.length === 0) {
         logs.push({
           type: 'info',
-          message: '代码执行成功，无输出',
+          message: '✅ 代码执行成功，无输出',
           timestamp: Date.now(),
         });
       }
     } catch (error: any) {
       logs.push({
         type: 'error',
-        message: `错误: ${error.message}`,
+        message: `❌ 错误: ${error.message}\n\n提示：此代码示例用于学习目的。如需运行，请复制到实际项目中。`,
         timestamp: Date.now(),
       });
     }
