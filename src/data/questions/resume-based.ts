@@ -419,224 +419,25 @@ function VirtualList<T>({
       },
       {
         language: 'typescript',
-        description: '虚拟滚动 + WebSocket实时日志 + 搜索高亮',
+        description: '动态高度虚拟滚动 + WebSocket实时日志 + 搜索高亮',
         interactiveDemo: 'log-search',
-        code: `import React, { useState, useRef, useEffect, useMemo } from 'react';
+        code: `// 使用独立的demo组件
+import { LogSearchDemo } from './components/demos/LogSearchDemo';
 
-// 完整的虚拟滚动 + WebSocket实时推送 + 搜索高亮实现
-function RealTimeLogViewer() {
-  const [logs, setLogs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [autoScroll, setAutoScroll] = useState(true);
-  const [isStreaming, setIsStreaming] = useState(false);
-  
-  const containerRef = useRef(null);
-  const timerRef = useRef();
-  const scrollTopRef = useRef(0);
-  
-  const itemHeight = 40;
-  const containerHeight = 400;
-  const bufferSize = 5;
-  
-  // 初始化日志
-  useEffect(() => {
-    const initialLogs = Array.from({ length: 100 }, (_, i) => ({
-      id: i,
-      text: \`日志条目 #\${i + 1} - 用户\${['张三', '李四', '王五'][i % 3]}执行了\${['登录', '查询', '删除', '更新'][i % 4]}操作\`,
-      level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)],
-      timestamp: Date.now() + i * 1000,
-    }));
-    setLogs(initialLogs);
-  }, []);
-  
-  // 模拟WebSocket实时推送
-  useEffect(() => {
-    if (isStreaming) {
-      timerRef.current = setInterval(() => {
-        setLogs(prev => {
-          const newLog = {
-            id: prev.length,
-            text: \`日志条目 #\${prev.length + 1} - 用户\${['张三', '李四', '王五'][Math.floor(Math.random() * 3)]}执行了\${['登录', '查询', '删除', '更新'][Math.floor(Math.random() * 4)]}操作\`,
-            level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)],
-            timestamp: Date.now(),
-          };
-          return [...prev, newLog];
-        });
-        
-        // 自动滚动到最新
-        if (autoScroll && containerRef.current) {
-          containerRef.current.scrollTop = containerRef.current.scrollHeight;
-        }
-      }, 500);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isStreaming, autoScroll]);
-  
-  // 虚拟滚动计算
-  const totalHeight = logs.length * itemHeight;
-  const visibleCount = Math.ceil(containerHeight / itemHeight);
-  
-  const startIndex = Math.max(0, Math.floor(scrollTopRef.current / itemHeight) - bufferSize);
-  const endIndex = Math.min(logs.length - 1, startIndex + visibleCount + bufferSize * 2);
-  
-  const visibleLogs = logs.slice(startIndex, endIndex + 1);
-  const offsetY = startIndex * itemHeight;
-  
-  // 搜索匹配
-  const matches = useMemo(() => {
-    if (!searchQuery) return [];
-    
-    const results = [];
-    const regex = new RegExp(searchQuery.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&'), 'gi');
-    
-    logs.forEach((log, logIndex) => {
-      let match;
-      regex.lastIndex = 0;
-      while ((match = regex.exec(log.text)) !== null) {
-        results.push({
-          logIndex,
-          matchStart: match.index,
-          matchEnd: match.index + match[0].length,
-        });
-      }
-    });
-    
-    return results;
-  }, [logs, searchQuery]);
-  
-  // 高亮文本
-  const highlightText = (text, logIndex) => {
-    if (!searchQuery) return text;
-    
-    const logMatches = matches.filter(m => m.logIndex === logIndex);
-    if (logMatches.length === 0) return text;
-    
-    const parts = [];
-    let lastIndex = 0;
-    
-    logMatches.forEach(({ matchStart, matchEnd }) => {
-      if (matchStart > lastIndex) {
-        parts.push({ text: text.slice(lastIndex, matchStart), highlight: false });
-      }
-      parts.push({ text: text.slice(matchStart, matchEnd), highlight: true });
-      lastIndex = matchEnd;
-    });
-    
-    if (lastIndex < text.length) {
-      parts.push({ text: text.slice(lastIndex), highlight: false });
-    }
-    
-    return (
-      <>
-        {parts.map((part, i) => 
-          part.highlight ? (
-            <mark key={i} style={{ background: '#ff00ff', color: '#fff' }}>
-              {part.text}
-            </mark>
-          ) : (
-            <span key={i}>{part.text}</span>
-          )
-        )}
-      </>
-    );
-  };
-  
-  // 滚动到匹配项
-  const scrollToMatch = (index) => {
-    if (matches[index] && containerRef.current) {
-      const targetScrollTop = matches[index].logIndex * itemHeight;
-      containerRef.current.scrollTop = targetScrollTop;
-    }
-  };
-  
-  const handleScroll = (e) => {
-    scrollTopRef.current = e.currentTarget.scrollTop;
-  };
-  
-  return (
-    <div>
-      {/* 控制面板 */}
-      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem' }}>
-        <input
-          type="text"
-          placeholder="搜索日志..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setCurrentIndex(0);
-          }}
-          style={{ flex: 1, padding: '0.75rem' }}
-        />
-        
-        <button onClick={() => setIsStreaming(!isStreaming)}>
-          {isStreaming ? '停止推送' : '开始推送'}
-        </button>
-        
-        <label>
-          <input
-            type="checkbox"
-            checked={autoScroll}
-            onChange={(e) => setAutoScroll(e.target.checked)}
-          />
-          自动滚动
-        </label>
-      </div>
-      
-      {/* 统计信息 */}
-      <div style={{ marginBottom: '1rem' }}>
-        总日志: {logs.length.toLocaleString()} | 
-        渲染: {visibleLogs.length} | 
-        内存节省: {((1 - visibleLogs.length / logs.length) * 100).toFixed(1)}%
-      </div>
-      
-      {/* 虚拟滚动容器 */}
-      <div
-        ref={containerRef}
-        style={{
-          height: containerHeight,
-          overflow: 'auto',
-          position: 'relative',
-        }}
-        onScroll={handleScroll}
-      >
-        <div style={{ height: totalHeight, position: 'relative' }}>
-          <div style={{ position: 'absolute', top: offsetY, width: '100%' }}>
-            {visibleLogs.map((log) => (
-              <div
-                key={log.id}
-                style={{
-                  height: itemHeight,
-                  padding: '0 1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  background: matches[currentIndex]?.logIndex === log.id 
-                    ? 'rgba(255, 0, 255, 0.1)' 
-                    : 'transparent',
-                }}
-              >
-                <span style={{ color: getLevelColor(log.level), minWidth: '60px' }}>
-                  [{log.level}]
-                </span>
-                <span style={{ flex: 1 }}>
-                  {highlightText(log.text, log.id)}
-                </span>
-                <span style={{ color: '#666', fontSize: '0.8rem' }}>
-                  {new Date(log.timestamp).toLocaleTimeString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}`,
+function App() {
+  return <LogSearchDemo />;
+}
+
+// 或者查看完整实现：
+// src/components/demos/LogSearchDemo.tsx
+// 
+// 功能特性：
+// - 动态高度虚拟滚动（消息长度1-5行随机）
+// - WebSocket实时推送模拟
+// - 自动滚动到最新消息
+// - 实时搜索和高亮
+// - 内存占用优化（90%+节省）
+// - 二分查找快速定位`,
       },
     ],
     references: [
