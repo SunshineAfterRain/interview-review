@@ -419,36 +419,86 @@ function VirtualList<T>({
       },
       {
         language: 'typescript',
-        description: '日志搜索和高亮',
+        description: '虚拟滚动 + WebSocket实时日志 + 搜索高亮',
         interactiveDemo: 'log-search',
-        code: `import React, { useState, useMemo } from 'react';
+        code: `import React, { useState, useRef, useEffect, useMemo } from 'react';
 
-interface LogItem {
-  id: string;
-  content: string;
-  timestamp: number;
-  level: 'info' | 'warn' | 'error';
-}
-
-interface LogSearchProps {
-  logs: LogItem[];
-  onJumpToMatch: (index: number) => void;
-}
-
-function LogSearch({ logs, onJumpToMatch }: LogSearchProps) {
+// 完整的虚拟滚动 + WebSocket实时推送 + 搜索高亮实现
+function RealTimeLogViewer() {
+  const [logs, setLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [autoScroll, setAutoScroll] = useState(true);
+  const [isStreaming, setIsStreaming] = useState(false);
+  
+  const containerRef = useRef(null);
+  const timerRef = useRef();
+  const scrollTopRef = useRef(0);
+  
+  const itemHeight = 40;
+  const containerHeight = 400;
+  const bufferSize = 5;
+  
+  // 初始化日志
+  useEffect(() => {
+    const initialLogs = Array.from({ length: 100 }, (_, i) => ({
+      id: i,
+      text: \`日志条目 #\${i + 1} - 用户\${['张三', '李四', '王五'][i % 3]}执行了\${['登录', '查询', '删除', '更新'][i % 4]}操作\`,
+      level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)],
+      timestamp: Date.now() + i * 1000,
+    }));
+    setLogs(initialLogs);
+  }, []);
+  
+  // 模拟WebSocket实时推送
+  useEffect(() => {
+    if (isStreaming) {
+      timerRef.current = setInterval(() => {
+        setLogs(prev => {
+          const newLog = {
+            id: prev.length,
+            text: \`日志条目 #\${prev.length + 1} - 用户\${['张三', '李四', '王五'][Math.floor(Math.random() * 3)]}执行了\${['登录', '查询', '删除', '更新'][Math.floor(Math.random() * 4)]}操作\`,
+            level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)],
+            timestamp: Date.now(),
+          };
+          return [...prev, newLog];
+        });
+        
+        // 自动滚动到最新
+        if (autoScroll && containerRef.current) {
+          containerRef.current.scrollTop = containerRef.current.scrollHeight;
+        }
+      }, 500);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isStreaming, autoScroll]);
+  
+  // 虚拟滚动计算
+  const totalHeight = logs.length * itemHeight;
+  const visibleCount = Math.ceil(containerHeight / itemHeight);
+  
+  const startIndex = Math.max(0, Math.floor(scrollTopRef.current / itemHeight) - bufferSize);
+  const endIndex = Math.min(logs.length - 1, startIndex + visibleCount + bufferSize * 2);
+  
+  const visibleLogs = logs.slice(startIndex, endIndex + 1);
+  const offsetY = startIndex * itemHeight;
   
   // 搜索匹配
   const matches = useMemo(() => {
     if (!searchQuery) return [];
     
-    const results: Array<{ logIndex: number; matchStart: number; matchEnd: number }> = [];
+    const results = [];
     const regex = new RegExp(searchQuery.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&'), 'gi');
     
     logs.forEach((log, logIndex) => {
       let match;
-      while ((match = regex.exec(log.content)) !== null) {
+      regex.lastIndex = 0;
+      while ((match = regex.exec(log.text)) !== null) {
         results.push({
           logIndex,
           matchStart: match.index,
@@ -461,13 +511,13 @@ function LogSearch({ logs, onJumpToMatch }: LogSearchProps) {
   }, [logs, searchQuery]);
   
   // 高亮文本
-  const highlightText = (text: string, logIndex: number) => {
+  const highlightText = (text, logIndex) => {
     if (!searchQuery) return text;
     
     const logMatches = matches.filter(m => m.logIndex === logIndex);
     if (logMatches.length === 0) return text;
     
-    const parts: Array<{ text: string; highlight: boolean }> = [];
+    const parts = [];
     let lastIndex = 0;
     
     logMatches.forEach(({ matchStart, matchEnd }) => {
@@ -486,7 +536,9 @@ function LogSearch({ logs, onJumpToMatch }: LogSearchProps) {
       <>
         {parts.map((part, i) => 
           part.highlight ? (
-            <mark key={i} className="highlight">{part.text}</mark>
+            <mark key={i} style={{ background: '#ff00ff', color: '#fff' }}>
+              {part.text}
+            </mark>
           ) : (
             <span key={i}>{part.text}</span>
           )
@@ -495,46 +547,93 @@ function LogSearch({ logs, onJumpToMatch }: LogSearchProps) {
     );
   };
   
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      const newIndex = currentIndex - 1;
-      setCurrentIndex(newIndex);
-      onJumpToMatch(matches[newIndex].logIndex);
+  // 滚动到匹配项
+  const scrollToMatch = (index) => {
+    if (matches[index] && containerRef.current) {
+      const targetScrollTop = matches[index].logIndex * itemHeight;
+      containerRef.current.scrollTop = targetScrollTop;
     }
   };
   
-  const handleNext = () => {
-    if (currentIndex < matches.length - 1) {
-      const newIndex = currentIndex + 1;
-      setCurrentIndex(newIndex);
-      onJumpToMatch(matches[newIndex].logIndex);
-    }
+  const handleScroll = (e) => {
+    scrollTopRef.current = e.currentTarget.scrollTop;
   };
   
   return (
-    <div className="log-search">
-      <input
-        type="text"
-        placeholder="搜索日志..."
-        value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.target.value);
-          setCurrentIndex(0);
-        }}
-      />
+    <div>
+      {/* 控制面板 */}
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem' }}>
+        <input
+          type="text"
+          placeholder="搜索日志..."
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentIndex(0);
+          }}
+          style={{ flex: 1, padding: '0.75rem' }}
+        />
+        
+        <button onClick={() => setIsStreaming(!isStreaming)}>
+          {isStreaming ? '停止推送' : '开始推送'}
+        </button>
+        
+        <label>
+          <input
+            type="checkbox"
+            checked={autoScroll}
+            onChange={(e) => setAutoScroll(e.target.checked)}
+          />
+          自动滚动
+        </label>
+      </div>
       
-      {searchQuery && (
-        <div className="search-info">
-          <span>{matches.length} 个结果</span>
-          <button onClick={handlePrevious} disabled={currentIndex === 0}>
-            上一个
-          </button>
-          <span>{currentIndex + 1} / {matches.length}</span>
-          <button onClick={handleNext} disabled={currentIndex === matches.length - 1}>
-            下一个
-          </button>
+      {/* 统计信息 */}
+      <div style={{ marginBottom: '1rem' }}>
+        总日志: {logs.length.toLocaleString()} | 
+        渲染: {visibleLogs.length} | 
+        内存节省: {((1 - visibleLogs.length / logs.length) * 100).toFixed(1)}%
+      </div>
+      
+      {/* 虚拟滚动容器 */}
+      <div
+        ref={containerRef}
+        style={{
+          height: containerHeight,
+          overflow: 'auto',
+          position: 'relative',
+        }}
+        onScroll={handleScroll}
+      >
+        <div style={{ height: totalHeight, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: offsetY, width: '100%' }}>
+            {visibleLogs.map((log) => (
+              <div
+                key={log.id}
+                style={{
+                  height: itemHeight,
+                  padding: '0 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  background: matches[currentIndex]?.logIndex === log.id 
+                    ? 'rgba(255, 0, 255, 0.1)' 
+                    : 'transparent',
+                }}
+              >
+                <span style={{ color: getLevelColor(log.level), minWidth: '60px' }}>
+                  [{log.level}]
+                </span>
+                <span style={{ flex: 1 }}>
+                  {highlightText(log.text, log.id)}
+                </span>
+                <span style={{ color: '#666', fontSize: '0.8rem' }}>
+                  {new Date(log.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }`,
