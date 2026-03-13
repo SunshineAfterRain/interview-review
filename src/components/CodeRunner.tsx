@@ -15,7 +15,7 @@ interface TestResult {
   input: any;
   expected: any;
   actual: any;
-  error?: string;
+  error?: string | null;
   executionTime: number;
 }
 
@@ -24,12 +24,6 @@ const safeExecute = (code: string, input: any): { result: any; error: string | n
   const startTime = performance.now();
   
   try {
-    // 创建一个安全的执行环境
-    const wrappedCode = `
-      ${code}
-      return typeof solution !== 'undefined' ? solution : (typeof ${code.includes('function') ? code.match(/function\s+(\w+)/)?.[1] || 'solution' : 'solution'} !== 'undefined' ? ${code.includes('function') ? code.match(/function\s+(\w+)/)?.[1] || 'solution' : 'solution'} : null);
-    `;
-    
     // 使用 Function 构造函数执行代码
     const executeFunc = new Function('input', `
       try {
@@ -102,11 +96,6 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
   language,
   starterCode,
   testCases,
-  scoreDimensions = [
-    { name: '正确性', maxScore: 60, weight: 0.6, description: '测试用例通过率' },
-    { name: '代码质量', maxScore: 20, weight: 0.2, description: '代码风格和最佳实践' },
-    { name: '效率', maxScore: 20, weight: 0.2, description: '执行时间和空间复杂度' }
-  ],
   onScoreChange,
 }) => {
   const [code, setCode] = useState(starterCode);

@@ -19,7 +19,6 @@ export const LogSearchDemo: React.FC = () => {
     lines: number; // 消息行数，用于模拟不同高度
   }>>([]);
   
-  const estimatedItemHeight = 40;
   const containerHeight = 400;
   const bufferSize = 5;
   

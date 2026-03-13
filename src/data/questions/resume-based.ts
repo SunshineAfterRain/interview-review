@@ -4,6 +4,7 @@ export const resumeBasedQuestions: Question[] = [
   {
     id: 'resume-001',
     category: 'performance',
+    questionType: 'theory',
     title: 'SSE流式交互与大模型应用',
     difficulty: 'hard',
     tags: ['SSE', '流式传输', '大模型', '实时通信'],
@@ -235,6 +236,7 @@ function StreamingText({ stream }: { stream: ReadableStream }) {
   {
     id: 'resume-002',
     category: 'performance',
+    questionType: 'theory',
     title: '虚拟滚动与海量数据渲染优化',
     difficulty: 'hard',
     tags: ['虚拟滚动', '性能优化', 'react-window', '大数据渲染'],
@@ -449,6 +451,7 @@ function App() {
   {
     id: 'resume-003',
     category: 'engineering',
+    questionType: 'theory',
     title: '低代码平台架构设计',
     difficulty: 'hard',
     tags: ['低代码', 'LowCode Engine', '可视化搭建', '插件化'],
@@ -749,6 +752,7 @@ function PropertyPanel({ node, meta, onChange }: PropertyPanelProps) {
   {
     id: 'resume-004',
     category: 'engineering',
+    questionType: 'theory',
     title: 'WebSocket实时通信与弱网优化',
     difficulty: 'hard',
     tags: ['WebSocket', '实时通信', '弱网优化', '心跳保活'],
@@ -1006,6 +1010,7 @@ function PropertyPanel({ node, meta, onChange }: PropertyPanelProps) {
   {
     id: 'resume-005',
     category: 'engineering',
+    questionType: 'theory',
     title: '组件库设计与工程化实践',
     difficulty: 'medium',
     tags: ['组件库', '工程化', '文档生成', '按需加载'],
@@ -1245,6 +1250,7 @@ Disabled.args = {
   {
     id: 'resume-006',
     category: 'css',
+    questionType: 'theory',
     title: 'Canvas动画与骨骼动画编辑器',
     difficulty: 'hard',
     tags: ['Canvas', 'Pixi.js', 'Spine', '骨骼动画'],

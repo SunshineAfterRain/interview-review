@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CategoryNav } from './components/CategoryNav';
 import { QuestionCard } from './components/QuestionCard';
 import { allQuestions } from './data';

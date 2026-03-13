@@ -4,6 +4,7 @@ export const engineeringQuestions: Question[] = [
   {
     id: 'eng-001',
     category: 'engineering',
+    questionType: 'theory',
     title: '前端模块化发展历程',
     difficulty: 'medium',
     tags: ['模块化', 'CommonJS', 'ES6 Module', 'AMD'],
@@ -154,6 +155,7 @@ console.log(count); // 1 (实时更新)`,
   {
     id: 'eng-002',
     category: 'engineering',
+    questionType: 'theory',
     title: 'Git工作流程和分支管理',
     difficulty: 'medium',
     tags: ['Git', '版本控制', '分支管理', '工作流'],
@@ -255,6 +257,7 @@ git push origin --delete feature/login
   {
     id: 'eng-003',
     category: 'engineering',
+    questionType: 'theory',
     title: '前端工程化和自动化构建',
     difficulty: 'medium',
     tags: ['工程化', '自动化', 'CI/CD', '脚手架'],

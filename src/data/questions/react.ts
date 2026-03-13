@@ -4,6 +4,7 @@ export const reactQuestions: Question[] = [
   {
     id: 'react-001',
     category: 'react',
+    questionType: 'theory',
     title: 'React Hooks 原理及常用 Hooks',
     difficulty: 'hard',
     tags: ['Hooks', 'useState', 'useEffect', 'useRef'],
@@ -165,6 +166,7 @@ function Counter() {
   {
     id: 'react-002',
     category: 'react',
+    questionType: 'theory',
     title: '虚拟DOM和Diff算法原理',
     difficulty: 'hard',
     tags: ['虚拟DOM', 'Diff算法', 'Fiber', '协调'],
@@ -337,6 +339,7 @@ function diffProps(oldProps = {}, newProps = {}) {
   {
     id: 'react-003',
     category: 'react',
+    questionType: 'theory',
     title: 'React性能优化策略',
     difficulty: 'medium',
     tags: ['性能优化', 'memo', 'useMemo', 'useCallback', '虚拟列表'],
@@ -568,6 +571,7 @@ function Home() {
   {
     id: 'react-004',
     category: 'react',
+    questionType: 'theory',
     title: 'React状态管理方案',
     difficulty: 'medium',
     tags: ['状态管理', 'Redux', 'Context', 'Zustand'],
@@ -763,6 +767,7 @@ function TodoApp() {
   {
     id: 'react-005',
     category: 'react',
+    questionType: 'theory',
     title: 'React组件通信方式',
     difficulty: 'medium',
     tags: ['组件通信', 'Props', 'Context', '事件总线'],

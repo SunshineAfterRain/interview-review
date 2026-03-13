@@ -4,6 +4,7 @@ export const javascriptQuestions: Question[] = [
   {
     id: 'js-001',
     category: 'javascript',
+    questionType: 'theory',
     title: '什么是闭包？闭包的应用场景有哪些？',
     difficulty: 'medium',
     tags: ['闭包', '作用域', '内存管理'],
@@ -117,6 +118,7 @@ handleSearch('hello'); // 500ms 后执行`,
   {
     id: 'js-002',
     category: 'javascript',
+    questionType: 'theory',
     title: '解释JavaScript的事件循环机制',
     difficulty: 'hard',
     tags: ['事件循环', '异步', '宏任务', '微任务'],
@@ -228,6 +230,7 @@ console.log('script end');
   {
     id: 'js-003',
     category: 'javascript',
+    questionType: 'theory',
     title: '原型链和继承的实现方式',
     difficulty: 'hard',
     tags: ['原型链', '继承', 'prototype', '__proto__'],
@@ -341,6 +344,7 @@ console.log(dog instanceof Animal); // true`,
   {
     id: 'js-004',
     category: 'javascript',
+    questionType: 'coding',
     title: 'Promise的实现原理和手写Promise',
     difficulty: 'hard',
     tags: ['Promise', '异步', 'A+规范'],
@@ -522,6 +526,7 @@ p.then(value => {
   {
     id: 'js-005',
     category: 'javascript',
+    questionType: 'coding',
     title: '深拷贝的实现方式',
     difficulty: 'medium',
     tags: ['深拷贝', '递归', '对象复制'],
@@ -639,6 +644,7 @@ console.log(cloned.self === cloned); // true - 循环引用正确处理`,
   {
     id: 'js-006',
     category: 'javascript',
+    questionType: 'theory',
     title: 'this的指向和绑定规则',
     difficulty: 'medium',
     tags: ['this', 'call', 'apply', 'bind', '箭头函数'],

@@ -4,6 +4,7 @@ export const performanceQuestions: Question[] = [
   {
     id: 'perf-001',
     category: 'performance',
+    questionType: 'theory',
     title: '前端性能优化策略',
     difficulty: 'hard',
     tags: ['性能优化', '加载优化', '渲染优化', '网络优化'],
@@ -203,6 +204,7 @@ const virtualList = new VirtualList({
   {
     id: 'perf-002',
     category: 'performance',
+    questionType: 'theory',
     title: 'Webpack性能优化',
     difficulty: 'hard',
     tags: ['Webpack', '构建优化', '打包优化', 'Tree Shaking'],

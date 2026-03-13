@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScoreResult, ScoreDimension } from '../types/question';
+import { ScoreResult } from '../types/question';
 
 interface ScorePanelProps {
   score?: ScoreResult;
@@ -12,8 +12,7 @@ interface ScorePanelProps {
 // 理论题评分函数
 const scoreTheoryAnswer = (
   userAnswer: string,
-  correctAnswer: string,
-  dimensions: ScoreDimension[]
+  correctAnswer: string
 ): ScoreResult => {
   const userKeywords = extractKeywords(userAnswer);
   const correctKeywords = extractKeywords(correctAnswer);
@@ -51,7 +50,7 @@ const scoreTheoryAnswer = (
         name: '完整性',
         score: completenessScore,
         maxScore: 40,
-        feedback: generateCompletenessFeedback(coverage, matchedKeywords, correctKeywords)
+        feedback: generateCompletenessFeedback(coverage)
       },
       {
         name: '准确性',
@@ -121,7 +120,7 @@ const analyzeStructure = (text: string): number => {
 };
 
 // 生成反馈信息
-const generateCompletenessFeedback = (coverage: number, matched: string[], total: string[]): string => {
+const generateCompletenessFeedback = (coverage: number): string => {
   if (coverage >= 0.8) return '答案非常完整，涵盖了大部分要点';
   if (coverage >= 0.6) return '答案较为完整，但遗漏了部分要点';
   if (coverage >= 0.4) return '答案不够完整，建议补充更多细节';
@@ -175,7 +174,7 @@ export const ScorePanel: React.FC<ScorePanelProps> = ({
   
   useEffect(() => {
     if (questionType === 'theory' && userAnswer && correctAnswer) {
-      const result = scoreTheoryAnswer(userAnswer, correctAnswer, []);
+      const result = scoreTheoryAnswer(userAnswer, correctAnswer);
       setCalculatedScore(result);
       onScoreCalculated?.(result);
     } else if (score) {
