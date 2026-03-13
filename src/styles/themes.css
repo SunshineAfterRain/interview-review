@@ -1,0 +1,119 @@
+/* ========================================
+   主题系统 - 支持暗色/亮色主题切换
+   ======================================== */
+
+/* 暗色主题（默认） */
+[data-theme="dark"] {
+  /* 背景色 */
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1a2332;
+  --bg-card: #151c2c;
+  --bg-hover: #1e293b;
+  
+  /* 霓虹色彩 */
+  --neon-cyan: #00f5ff;
+  --neon-magenta: #ff00ff;
+  --neon-green: #00ff88;
+  --neon-yellow: #ffff00;
+  --neon-orange: #ff6b35;
+  --neon-purple: #bf00ff;
+  --neon-blue: #00d4ff;
+  
+  /* 主题色 */
+  --primary-color: var(--neon-cyan);
+  --primary-glow: rgba(0, 245, 255, 0.3);
+  --secondary-color: var(--neon-purple);
+  --accent-color: var(--neon-green);
+  
+  /* 文字颜色 */
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* 边框和分隔线 */
+  --border-color: rgba(0, 245, 255, 0.15);
+  --border-glow: rgba(0, 245, 255, 0.3);
+  
+  /* 状态颜色 */
+  --success-color: var(--neon-green);
+  --warning-color: var(--neon-yellow);
+  --error-color: #ff4757;
+  --info-color: var(--neon-blue);
+  
+  /* 阴影 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px var(--primary-glow);
+  
+  /* 背景渐变 */
+  --bg-gradient: 
+    radial-gradient(ellipse at top, rgba(0, 245, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(191, 0, 255, 0.03) 0%, transparent 50%);
+}
+
+/* 亮色主题 */
+[data-theme="light"] {
+  /* 背景色 */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-hover: #e2e8f0;
+  
+  /* 主题色 */
+  --primary-color: #0891b2;
+  --primary-glow: rgba(8, 145, 178, 0.2);
+  --secondary-color: #7c3aed;
+  --accent-color: #10b981;
+  
+  /* 文字颜色 */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  /* 边框和分隔线 */
+  --border-color: rgba(8, 145, 178, 0.2);
+  --border-glow: rgba(8, 145, 178, 0.3);
+  
+  /* 状态颜色 */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
+  
+  /* 阴影 */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+  --shadow-glow: 0 0 20px var(--primary-glow);
+  
+  /* 背景渐变 */
+  --bg-gradient: 
+    radial-gradient(ellipse at top, rgba(8, 145, 178, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+  
+  /* 亮色主题特殊变量 */
+  --neon-cyan: #0891b2;
+  --neon-magenta: #7c3aed;
+  --neon-green: #10b981;
+  --neon-yellow: #f59e0b;
+  --neon-orange: #f97316;
+  --neon-purple: #7c3aed;
+  --neon-blue: #3b82f6;
+}
+
+/* 主题切换过渡效果 */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* 禁用代码编辑器的主题过渡，避免性能问题 */
+.monaco-editor,
+.monaco-editor * {
+  transition: none !important;
+}

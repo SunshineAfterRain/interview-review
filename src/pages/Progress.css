@@ -1,0 +1,430 @@
+/* ========================================
+   学习进度页面样式
+   ======================================== */
+
+.progress-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 空状态 */
+.progress-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-color);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.progress-empty h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+}
+
+.progress-empty p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.start-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  color: var(--bg-primary);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  transition: all var(--transition-normal);
+}
+
+.start-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* 页面头部 */
+.progress-header {
+  margin-bottom: 2rem;
+}
+
+.progress-header h2 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  margin-bottom: 0.5rem;
+}
+
+.header-icon {
+  font-size: 2rem;
+}
+
+.header-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-left: 2.75rem;
+}
+
+/* 总体进度卡片 */
+.overall-progress-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.overall-progress-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta), var(--neon-green));
+}
+
+.overall-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.overall-progress-header h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.overall-percentage {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--neon-cyan);
+  text-shadow: 0 0 20px var(--primary-glow);
+}
+
+.overall-progress-bar {
+  height: 12px;
+  background: var(--bg-tertiary);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.overall-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta), var(--neon-green));
+  border-radius: 6px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+  position: relative;
+}
+
+.overall-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.overall-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.stat-box {
+  background: var(--bg-tertiary);
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
+
+.stat-box:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stat-number.mastered {
+  color: var(--neon-green);
+}
+
+.stat-number.learning {
+  color: var(--neon-cyan);
+}
+
+.stat-number.not-started {
+  color: var(--text-muted);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+/* 分类进度 */
+.category-progress-section {
+  margin-bottom: 2rem;
+}
+
+.category-progress-section h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin-bottom: 1.5rem;
+}
+
+.category-progress-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.category-progress-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  transition: all var(--transition-normal);
+}
+
+.category-progress-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.category-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.category-icon {
+  font-size: 1.5rem;
+}
+
+.category-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.category-percentage {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--neon-cyan);
+}
+
+.category-progress-bar {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.category-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.3);
+}
+
+.category-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.cat-stat {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.cat-stat.mastered {
+  color: var(--neon-green);
+}
+
+.cat-stat.learning {
+  color: var(--neon-cyan);
+}
+
+.cat-stat.not-started {
+  color: var(--text-muted);
+}
+
+.view-category-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  transition: all var(--transition-fast);
+}
+
+.view-category-link:hover {
+  border-color: var(--primary-color);
+  color: var(--neon-cyan);
+  box-shadow: var(--shadow-glow);
+}
+
+/* 学习建议 */
+.learning-suggestions {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+}
+
+.learning-suggestions h3 {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin-bottom: 1rem;
+}
+
+.learning-suggestions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.learning-suggestions li {
+  padding: 0.75rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.learning-suggestions li:last-child {
+  border-bottom: none;
+}
+
+.learning-suggestions li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--neon-cyan);
+  font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .progress-page {
+    padding: 1rem;
+  }
+
+  .progress-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .overall-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .stat-box {
+    padding: 1rem;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .category-progress-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .category-progress-card {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overall-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .category-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

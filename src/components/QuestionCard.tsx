@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { Question, DIFFICULTY_LABELS, CATEGORIES, ScoreResult } from '../types/question';
 import { AnswerPanel } from './AnswerPanel';
 import { CodeRunner } from './CodeRunner';
 import { ScorePanel } from './ScorePanel';
+import { useUserStore } from '../stores/useUserStore';
 
 interface QuestionCardProps {
   question: Question;
@@ -21,9 +23,18 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const [codeScore, setCodeScore] = useState<ScoreResult | undefined>();
   const [showScorePanel, setShowScorePanel] = useState(false);
   
+  const { 
+    isFavorite, 
+    toggleFavorite, 
+    getProgress, 
+    updateProgress 
+  } = useUserStore();
+  
   const category = CATEGORIES.find(c => c.key === question.category);
   const difficulty = DIFFICULTY_LABELS[question.difficulty];
   const isCodingQuestion = question.questionType === 'coding';
+  const favorite = isFavorite(question.id);
+  const progress = getProgress(question.id);
 
   const handleScoreCalculated = (score: ScoreResult) => {
     setCodeScore(score);
@@ -34,6 +45,15 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     if (userAnswer.trim()) {
       setShowScorePanel(true);
     }
+  };
+
+  const handleProgressChange = (status: 'not_started' | 'learning' | 'mastered') => {
+    updateProgress(question.id, status);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 阻止事件冒泡
+    toggleFavorite(question.id);
   };
 
   return (
@@ -57,6 +77,12 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
               编程题
             </span>
           )}
+          {/* 学习进度标记 */}
+          <span className={`progress-badge ${progress}`}>
+            {progress === 'not_started' && '○ 未开始'}
+            {progress === 'learning' && '◐ 学习中'}
+            {progress === 'mastered' && '● 已掌握'}
+          </span>
         </div>
         
         <h3 className="question-title">{question.title}</h3>
@@ -69,13 +95,55 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           ))}
         </div>
         
-        <button className="expand-btn">
-          {isExpanded ? '▼' : '▶'}
-        </button>
+        <div className="header-actions">
+          {/* 收藏按钮 */}
+          <button
+            className={`favorite-btn ${favorite ? 'active' : ''}`}
+            onClick={handleFavoriteClick}
+            aria-label={favorite ? '取消收藏' : '收藏'}
+            title={favorite ? '取消收藏' : '收藏'}
+          >
+            {favorite ? '★' : '☆'}
+          </button>
+          
+          <button className="expand-btn">
+            {isExpanded ? '▼' : '▶'}
+          </button>
+        </div>
       </div>
       
       {isExpanded && (
         <div className="question-content">
+          {/* 进度更新按钮 */}
+          <div className="progress-actions">
+            <span className="progress-label">更新学习状态：</span>
+            <button
+              className={`progress-btn ${progress === 'not_started' ? 'active' : ''}`}
+              onClick={() => handleProgressChange('not_started')}
+            >
+              ○ 未开始
+            </button>
+            <button
+              className={`progress-btn ${progress === 'learning' ? 'active' : ''}`}
+              onClick={() => handleProgressChange('learning')}
+            >
+              ◐ 学习中
+            </button>
+            <button
+              className={`progress-btn ${progress === 'mastered' ? 'active' : ''}`}
+              onClick={() => handleProgressChange('mastered')}
+            >
+              ● 已掌握
+            </button>
+            <Link 
+              to={`/questions/${question.id}`} 
+              className="detail-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              查看详情 →
+            </Link>
+          </div>
+
           <div className="question-section">
             <h4>题目：</h4>
             <p>{question.question}</p>

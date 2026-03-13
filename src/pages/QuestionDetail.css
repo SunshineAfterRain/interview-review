@@ -1,0 +1,426 @@
+/* ========================================
+   题目详情页面样式
+   ======================================== */
+
+.question-detail-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 面包屑导航 */
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+}
+
+.breadcrumb a {
+  color: var(--neon-cyan);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumb a:hover {
+  color: var(--neon-magenta);
+}
+
+.breadcrumb .separator {
+  margin: 0 0.5rem;
+  color: var(--text-muted);
+}
+
+.breadcrumb .current {
+  color: var(--text-secondary);
+}
+
+/* 题目不存在 */
+.question-not-found {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-color);
+}
+
+.not-found-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.question-not-found h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+}
+
+.question-not-found p {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  color: var(--bg-primary);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  transition: all var(--transition-normal);
+}
+
+.back-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* 题目头部 */
+.question-detail-header {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.question-detail-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--neon-cyan), var(--neon-magenta));
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.question-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.question-category {
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--bg-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.question-difficulty {
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.question-type-badge {
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.question-type-badge.coding {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 212, 255, 0.2));
+  color: var(--neon-green);
+  border: 1px solid var(--neon-green);
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.progress-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-selector label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.progress-select {
+  padding: 0.5rem 1rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.progress-select:hover {
+  border-color: var(--primary-color);
+}
+
+.progress-select:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.favorite-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.favorite-btn:hover {
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+  transform: scale(1.1);
+}
+
+.favorite-btn.active {
+  background: rgba(255, 0, 255, 0.1);
+  border-color: var(--neon-magenta);
+  color: var(--neon-magenta);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+}
+
+.question-title {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.question-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: rgba(0, 245, 255, 0.1);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--neon-cyan);
+  font-family: var(--font-mono);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+}
+
+/* 题目内容 */
+.question-detail-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.question-section {
+  margin-bottom: 2rem;
+}
+
+.question-section h3 {
+  color: var(--neon-cyan);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.question-section h3::before {
+  content: '//';
+  color: var(--text-muted);
+}
+
+.question-section p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* 编程题区域 */
+.coding-section {
+  margin-top: 2rem;
+}
+
+/* 用户答案区域 */
+.user-answer-section {
+  margin-top: 2rem;
+}
+
+.user-answer-section h4 {
+  color: var(--neon-cyan);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+}
+
+.answer-editor-container {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.submit-answer-btn {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-magenta));
+  color: var(--bg-primary);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.submit-answer-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.submit-answer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 参考答案 */
+.reference-answer {
+  margin-top: 2rem;
+}
+
+.reference-answer h4 {
+  color: var(--neon-green);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-family: var(--font-mono);
+}
+
+.code-editor-container {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+/* 操作按钮 */
+.question-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.show-answer-btn {
+  background: var(--bg-tertiary);
+  color: var(--neon-cyan);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.show-answer-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(191, 0, 255, 0.1));
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+/* 返回按钮 */
+.back-to-home {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .question-detail-page {
+    padding: 1rem;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .question-title {
+    font-size: 1.5rem;
+  }
+
+  .question-detail-header,
+  .question-detail-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .question-meta {
+    gap: 0.5rem;
+  }
+
+  .question-category {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .question-difficulty {
+    font-size: 0.8rem;
+  }
+}
