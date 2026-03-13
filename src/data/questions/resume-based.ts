@@ -420,6 +420,7 @@ function VirtualList<T>({
       {
         language: 'typescript',
         description: '日志搜索和高亮',
+        interactiveDemo: 'log-search',
         code: `import React, { useState, useMemo } from 'react';
 
 interface LogItem {

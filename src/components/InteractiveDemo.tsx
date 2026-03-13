@@ -12,6 +12,8 @@ export const InteractiveDemo: React.FC<InteractiveDemoProps> = ({ type }) => {
       return <DebounceDemo />;
     case 'deep-clone':
       return <DeepCloneDemo />;
+    case 'log-search':
+      return <LogSearchDemo />;
     default:
       return <div>未知的演示类型</div>;
   }
@@ -288,6 +290,233 @@ const DeepCloneDemo: React.FC = () => {
       
       <div className="demo-info">
         <p>💡 <strong>提示：</strong>修改克隆对象不会影响原始对象</p>
+      </div>
+    </div>
+  );
+};
+
+const LogSearchDemo: React.FC = () => {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  
+  const logs = React.useMemo(() => 
+    Array.from({ length: 100 }, (_, i) => ({
+      id: i,
+      text: `日志条目 #${i + 1} - 用户${['张三', '李四', '王五'][i % 3]}执行了${['登录', '查询', '删除', '更新'][i % 4]}操作 - ${new Date(Date.now() + i * 1000).toLocaleTimeString()}`,
+      level: ['INFO', 'WARN', 'ERROR'][Math.floor(Math.random() * 3)] as 'INFO' | 'WARN' | 'ERROR',
+    })),
+    []
+  );
+  
+  const matches = React.useMemo(() => {
+    if (!searchQuery) return [];
+    
+    const results: Array<{ logIndex: number; matchStart: number; matchEnd: number }> = [];
+    const regex = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    
+    logs.forEach((log, logIndex) => {
+      let match;
+      while ((match = regex.exec(log.text)) !== null) {
+        results.push({
+          logIndex,
+          matchStart: match.index,
+          matchEnd: match.index + match[0].length,
+        });
+      }
+    });
+    
+    return results;
+  }, [logs, searchQuery]);
+  
+  const highlightText = (text: string, logIndex: number) => {
+    if (!searchQuery) return text;
+    
+    const logMatches = matches.filter(m => m.logIndex === logIndex);
+    if (logMatches.length === 0) return text;
+    
+    const parts: Array<{ text: string; highlight: boolean }> = [];
+    let lastIndex = 0;
+    
+    logMatches.forEach(({ matchStart, matchEnd }) => {
+      if (matchStart > lastIndex) {
+        parts.push({ text: text.slice(lastIndex, matchStart), highlight: false });
+      }
+      parts.push({ text: text.slice(matchStart, matchEnd), highlight: true });
+      lastIndex = matchEnd;
+    });
+    
+    if (lastIndex < text.length) {
+      parts.push({ text: text.slice(lastIndex), highlight: false });
+    }
+    
+    return (
+      <>
+        {parts.map((part, i) => 
+          part.highlight ? (
+            <mark key={i} style={{ background: '#ff00ff', color: '#fff', padding: '0 2px', borderRadius: '2px' }}>
+              {part.text}
+            </mark>
+          ) : (
+            <span key={i}>{part.text}</span>
+          )
+        )}
+      </>
+    );
+  };
+  
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      scrollToMatch(newIndex);
+    }
+  };
+  
+  const handleNext = () => {
+    if (currentIndex < matches.length - 1) {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      scrollToMatch(newIndex);
+    }
+  };
+  
+  const scrollToMatch = (index: number) => {
+    if (matches[index] && containerRef.current) {
+      const logElement = containerRef.current.querySelector(`[data-log-id="${matches[index].logIndex}"]`);
+      if (logElement) {
+        logElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+  
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case 'ERROR': return '#ff6b6b';
+      case 'WARN': return '#ffd93d';
+      default: return '#00ff88';
+    }
+  };
+  
+  return (
+    <div className="interactive-demo">
+      <div className="demo-header">
+        <h4>🎯 日志搜索和高亮演示</h4>
+        <div className="demo-stats">
+          <span>总日志: {logs.length}</span>
+          <span>匹配数: {matches.length}</span>
+        </div>
+      </div>
+      
+      <div className="demo-content">
+        <div style={{ marginBottom: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="搜索日志（例如：张三、登录、ERROR）..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentIndex(0);
+            }}
+            style={{
+              flex: 1,
+              padding: '0.75rem',
+              fontSize: '1rem',
+              border: '2px solid #00f5ff',
+              borderRadius: '8px',
+              background: '#0a0e17',
+              color: '#e0e0e0',
+              fontFamily: 'Consolas, Monaco, monospace',
+            }}
+          />
+          
+          {searchQuery && matches.length > 0 && (
+            <>
+              <button
+                onClick={handlePrevious}
+                disabled={currentIndex === 0}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: currentIndex === 0 ? '#333' : 'linear-gradient(135deg, #00f5ff, #00c5cc)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: currentIndex === 0 ? '#666' : '#000',
+                  fontWeight: 'bold',
+                  cursor: currentIndex === 0 ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Consolas, Monaco, monospace',
+                }}
+              >
+                ↑ 上一个
+              </button>
+              
+              <span style={{ color: '#00f5ff', fontFamily: 'Consolas, Monaco, monospace', minWidth: '80px', textAlign: 'center' }}>
+                {currentIndex + 1} / {matches.length}
+              </span>
+              
+              <button
+                onClick={handleNext}
+                disabled={currentIndex === matches.length - 1}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: currentIndex === matches.length - 1 ? '#333' : 'linear-gradient(135deg, #00f5ff, #00c5cc)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: currentIndex === matches.length - 1 ? '#666' : '#000',
+                  fontWeight: 'bold',
+                  cursor: currentIndex === matches.length - 1 ? 'not-allowed' : 'pointer',
+                  fontFamily: 'Consolas, Monaco, monospace',
+                }}
+              >
+                ↓ 下一个
+              </button>
+            </>
+          )}
+        </div>
+        
+        <div
+          ref={containerRef}
+          style={{
+            height: '300px',
+            overflow: 'auto',
+            border: '2px solid #00f5ff',
+            borderRadius: '8px',
+            background: '#0a0e17',
+          }}
+        >
+          {logs.map((log) => (
+            <div
+              key={log.id}
+              data-log-id={log.id}
+              style={{
+                padding: '0.5rem 1rem',
+                borderBottom: '1px solid rgba(0, 245, 255, 0.1)',
+                fontSize: '0.9rem',
+                fontFamily: 'Consolas, Monaco, monospace',
+                display: 'flex',
+                alignItems: 'center',
+                background: matches[currentIndex]?.logIndex === log.id ? 'rgba(255, 0, 255, 0.1)' : 'transparent',
+              }}
+            >
+              <span
+                style={{
+                  color: getLevelColor(log.level),
+                  fontWeight: 'bold',
+                  marginRight: '1rem',
+                  minWidth: '60px',
+                }}
+              >
+                [{log.level}]
+              </span>
+              <span style={{ color: '#e0e0e0' }}>
+                {highlightText(log.text, log.id)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="demo-info">
+        <p>💡 <strong>提示：</strong>输入关键词搜索日志，匹配项会高亮显示，可使用上下按钮导航</p>
       </div>
     </div>
   );
