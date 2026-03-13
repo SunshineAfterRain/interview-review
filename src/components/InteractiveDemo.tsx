@@ -300,9 +300,9 @@ const LogSearchDemo: React.FC = () => {
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [autoScroll, setAutoScroll] = React.useState(true);
   const [isStreaming, setIsStreaming] = React.useState(false);
+  const [scrollTop, setScrollTop] = React.useState(0); // 改用state而不是ref
   const containerRef = React.useRef<HTMLDivElement>(null);
   const timerRef = React.useRef<number>();
-  const scrollTopRef = React.useRef(0);
   const itemHeightsRef = React.useRef<Map<number, number>>(new Map());
   const positionCacheRef = React.useRef<Array<{ index: number; offset: number; height: number }>>([]);
   
@@ -432,8 +432,8 @@ const LogSearchDemo: React.FC = () => {
     return low;
   };
   
-  const startIndex = Math.max(0, findStartIndex(scrollTopRef.current) - bufferSize);
-  const endIndex = Math.min(logs.length - 1, findStartIndex(scrollTopRef.current + containerHeight) + bufferSize);
+  const startIndex = Math.max(0, findStartIndex(scrollTop) - bufferSize);
+  const endIndex = Math.min(logs.length - 1, findStartIndex(scrollTop + containerHeight) + bufferSize);
   
   const visibleLogs = logs.slice(startIndex, endIndex + 1);
   const offsetY = positions[startIndex]?.offset || 0;
@@ -527,7 +527,7 @@ const LogSearchDemo: React.FC = () => {
   };
   
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    scrollTopRef.current = e.currentTarget.scrollTop;
+    setScrollTop(e.currentTarget.scrollTop);
   };
   
   // 测量实际高度
