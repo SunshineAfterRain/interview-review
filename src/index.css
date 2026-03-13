@@ -1387,6 +1387,9 @@ code, pre, .mono {
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .app-footer::before {
@@ -1396,6 +1399,17 @@ code, pre, .mono {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
   margin-bottom: 1rem;
+}
+
+.footer-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.footer-hint:hover {
+  opacity: 1;
+  color: var(--neon-cyan);
 }
 
 /* ========================================
