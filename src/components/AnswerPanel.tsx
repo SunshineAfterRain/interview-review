@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { CodeExample } from '../types/question';
 
@@ -8,6 +8,12 @@ interface AnswerPanelProps {
   references?: string[];
 }
 
+interface ConsoleMessage {
+  type: 'log' | 'error' | 'warn' | 'info';
+  message: string;
+  timestamp: number;
+}
+
 export const AnswerPanel: React.FC<AnswerPanelProps> = ({
   answer,
   codeExamples,
@@ -15,12 +21,191 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
 }) => {
   const [activeCodeIndex, setActiveCodeIndex] = useState(0);
   const [editedCode, setEditedCode] = useState<Record<number, string>>({});
+  const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewContent, setPreviewContent] = useState<string>('');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const consoleRef = useRef<HTMLDivElement>(null);
 
   const handleCodeChange = (index: number, value: string) => {
     setEditedCode(prev => ({
       ...prev,
       [index]: value,
     }));
+  };
+
+  const getCurrentCode = () => {
+    return editedCode[activeCodeIndex] || codeExamples?.[activeCodeIndex]?.code || '';
+  };
+
+  const getCurrentLanguage = () => {
+    return codeExamples?.[activeCodeIndex]?.language || 'javascript';
+  };
+
+  const runJavaScriptCode = () => {
+    setIsRunning(true);
+    setConsoleMessages([]);
+    
+    const code = getCurrentCode();
+    const logs: ConsoleMessage[] = [];
+    
+    const customConsole = {
+      log: (...args: any[]) => {
+        logs.push({
+          type: 'log',
+          message: args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+          ).join(' '),
+          timestamp: Date.now(),
+        });
+      },
+      error: (...args: any[]) => {
+        logs.push({
+          type: 'error',
+          message: args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+          ).join(' '),
+          timestamp: Date.now(),
+        });
+      },
+      warn: (...args: any[]) => {
+        logs.push({
+          type: 'warn',
+          message: args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+          ).join(' '),
+          timestamp: Date.now(),
+        });
+      },
+      info: (...args: any[]) => {
+        logs.push({
+          type: 'info',
+          message: args.map(arg => 
+            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+          ).join(' '),
+          timestamp: Date.now(),
+        });
+      },
+    };
+
+    try {
+      const wrappedCode = `
+        (function(console) {
+          ${code}
+        })
+      `;
+      
+      const fn = eval(wrappedCode);
+      fn(customConsole);
+      
+      if (logs.length === 0) {
+        logs.push({
+          type: 'info',
+          message: '代码执行成功，无输出',
+          timestamp: Date.now(),
+        });
+      }
+    } catch (error: any) {
+      logs.push({
+        type: 'error',
+        message: `错误: ${error.message}`,
+        timestamp: Date.now(),
+      });
+    }
+
+    setConsoleMessages(logs);
+    setIsRunning(false);
+    
+    setTimeout(() => {
+      if (consoleRef.current) {
+        consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+      }
+    }, 100);
+  };
+
+  const runHTMLCode = () => {
+    setIsRunning(true);
+    const code = getCurrentCode();
+    setPreviewContent(code);
+    setShowPreview(true);
+    setIsRunning(false);
+  };
+
+  const runReactCode = () => {
+    setIsRunning(true);
+    const code = getCurrentCode();
+    
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Preview</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+    * { box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    ${code}
+    
+    // 自动渲染第一个导出的组件
+    if (typeof App !== 'undefined') {
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    } else if (typeof Example !== 'undefined') {
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<Example />);
+    }
+  </script>
+</body>
+</html>
+    `;
+    
+    setPreviewContent(htmlContent);
+    setShowPreview(true);
+    setIsRunning(false);
+  };
+
+  const runCode = () => {
+    const language = getCurrentLanguage();
+    
+    switch (language) {
+      case 'javascript':
+      case 'typescript':
+        runJavaScriptCode();
+        break;
+      case 'html':
+        runHTMLCode();
+        break;
+      case 'react':
+      case 'tsx':
+      case 'jsx':
+        runReactCode();
+        break;
+      default:
+        runJavaScriptCode();
+    }
+  };
+
+  const clearConsole = () => {
+    setConsoleMessages([]);
+  };
+
+  const getConsoleMessageColor = (type: string) => {
+    switch (type) {
+      case 'error': return '#ff6b6b';
+      case 'warn': return '#ffd93d';
+      case 'info': return '#6bcfff';
+      default: return '#00ff88';
+    }
   };
 
   return (
@@ -53,8 +238,8 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
           <div className="code-editor-container">
             <Editor
               height="400px"
-              language={codeExamples[activeCodeIndex].language}
-              value={editedCode[activeCodeIndex] || codeExamples[activeCodeIndex].code}
+              language={getCurrentLanguage()}
+              value={getCurrentCode()}
               onChange={(value) => handleCodeChange(activeCodeIndex, value || '')}
               theme="vs-dark"
               options={{
@@ -68,6 +253,65 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
               }}
             />
           </div>
+          
+          <div className="code-actions">
+            <button 
+              className="run-button"
+              onClick={runCode}
+              disabled={isRunning}
+            >
+              {isRunning ? '⏳ 运行中...' : '▶️ 运行代码'}
+            </button>
+            {consoleMessages.length > 0 && (
+              <button 
+                className="clear-button"
+                onClick={clearConsole}
+              >
+                🗑️ 清空控制台
+              </button>
+            )}
+          </div>
+          
+          {consoleMessages.length > 0 && (
+            <div className="console-output" ref={consoleRef}>
+              <div className="console-header">
+                <span>控制台输出</span>
+              </div>
+              <div className="console-messages">
+                {consoleMessages.map((msg, index) => (
+                  <div 
+                    key={index} 
+                    className="console-message"
+                    style={{ color: getConsoleMessageColor(msg.type) }}
+                  >
+                    <span className="console-type">[{msg.type.toUpperCase()}]</span>
+                    <pre className="console-text">{msg.message}</pre>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {showPreview && previewContent && (
+            <div className="preview-container">
+              <div className="preview-header">
+                <span>实时预览</span>
+                <button 
+                  className="close-preview"
+                  onClick={() => setShowPreview(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <iframe
+                ref={iframeRef}
+                srcDoc={previewContent}
+                className="preview-iframe"
+                sandbox="allow-scripts allow-same-origin"
+                title="Code Preview"
+              />
+            </div>
+          )}
         </div>
       )}
 
