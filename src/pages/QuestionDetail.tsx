@@ -31,6 +31,7 @@ export const QuestionDetail: React.FC = () => {
   const [userAnswer, setUserAnswer] = useState('');
   const [codeScore, setCodeScore] = useState<any>();
   const [showScorePanel, setShowScorePanel] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   // 如果题目不存在
   if (!question) {
@@ -68,6 +69,34 @@ export const QuestionDetail: React.FC = () => {
 
   const handleProgressChange = (status: 'not_started' | 'learning' | 'mastered') => {
     updateProgress(question.id, status);
+  };
+
+  // 分享功能
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/questions/${question.id}`;
+    const shareText = `前端面试题：${question.title}`;
+    
+    // 尝试使用 Web Share API
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // 用户取消分享，不做处理
+      }
+    } else {
+      // 回退到复制链接
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      } catch (err) {
+        // 复制失败，显示链接
+        prompt('复制链接:', shareUrl);
+      }
+    }
   };
 
   return (
@@ -134,6 +163,16 @@ export const QuestionDetail: React.FC = () => {
               title={isWrong ? '从错题本移除' : '加入错题本'}
             >
               {isWrong ? '📝' : '🗒️'}
+            </button>
+
+            {/* 分享按钮 */}
+            <button
+              className={`share-btn ${shareCopied ? 'copied' : ''}`}
+              onClick={handleShare}
+              aria-label="分享题目"
+              title="分享题目"
+            >
+              {shareCopied ? '✓' : '🔗'}
             </button>
           </div>
         </div>
