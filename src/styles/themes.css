@@ -254,7 +254,9 @@
   --clay-warning: #F59E0B;
   --clay-warning-light: #FBBF24;
   --clay-error: #EF4444;
+  --clay-error-light: #F87171;
   --clay-success: #10B981;
+  --clay-success-light: #34D399;
 
   /* 文字颜色 */
   --clay-text-primary: var(--text-primary);
@@ -433,8 +435,11 @@
   --clay-secondary: var(--color-primary-400);
   --clay-secondary-light: var(--color-primary-300);
   --clay-success: #059669;
+  --clay-success-light: #34D399;
   --clay-warning: #D97706;
+  --clay-warning-light: #FBBF24;
   --clay-error: #DC2626;
+  --clay-error-light: #F87171;
   --clay-text-primary: var(--text-primary);
   --clay-text-secondary: var(--text-secondary);
   --clay-text-muted: var(--text-muted);

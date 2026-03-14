@@ -507,9 +507,10 @@ function reverseList(head) {
 
 const solution = reverseList;`,
       testCases: [
-        { input: '1->2->3->4->5', expectedOutput: '5->4->3->2->1', description: '标准链表' },
-        { input: '1->2', expectedOutput: '2->1', description: '两个节点' },
-        { input: null, expectedOutput: null, description: '空链表' },
+        { input: { values: [1, 2, 3, 4, 5] }, expectedOutput: [5, 4, 3, 2, 1], description: '标准链表' },
+        { input: { values: [1, 2] }, expectedOutput: [2, 1], description: '两个节点' },
+        { input: { values: [] }, expectedOutput: [], description: '空链表' },
+        { input: { values: [1] }, expectedOutput: [1], description: '单节点' },
       ],
       timeLimit: 1000,
     },
@@ -1656,7 +1657,10 @@ function levelOrder(root) {
 
 const solution = levelOrder;`,
       testCases: [
-        { input: 'tree-1', expectedOutput: [[3], [9, 20], [15, 7]], description: '标准二叉树' },
+        { input: { tree: [3, 9, 20, null, null, 15, 7] }, expectedOutput: [[3], [9, 20], [15, 7]], description: '标准二叉树' },
+        { input: { tree: [1] }, expectedOutput: [[1]], description: '单节点' },
+        { input: { tree: [] }, expectedOutput: [], description: '空树' },
+        { input: { tree: [1, 2, 3, 4, 5] }, expectedOutput: [[1], [2, 3], [4, 5]], description: '完全二叉树' },
       ],
       timeLimit: 1000,
     },
@@ -2091,7 +2095,38 @@ class DoubleLinkedList {
 
 const solution = LRUCache;`,
       testCases: [
-        { input: 'test-1', expectedOutput: [1, -1], description: '基本操作' },
+        { 
+          input: { 
+            capacity: 2,
+            operations: [
+              { type: 'put', key: 1, value: 1 },
+              { type: 'put', key: 2, value: 2 },
+              { type: 'get', key: 1 },
+              { type: 'put', key: 3, value: 3 },
+              { type: 'get', key: 2 },
+              { type: 'put', key: 4, value: 4 },
+              { type: 'get', key: 1 },
+              { type: 'get', key: 3 },
+              { type: 'get', key: 4 }
+            ]
+          }, 
+          expectedOutput: [1, -1, -1, 3, 4], 
+          description: '基本操作' 
+        },
+        { 
+          input: { 
+            capacity: 1,
+            operations: [
+              { type: 'put', key: 2, value: 1 },
+              { type: 'get', key: 2 },
+              { type: 'put', key: 3, value: 2 },
+              { type: 'get', key: 2 },
+              { type: 'get', key: 3 }
+            ]
+          }, 
+          expectedOutput: [1, -1, 2], 
+          description: '容量为1' 
+        },
       ],
       timeLimit: 1000,
     },
@@ -3385,8 +3420,10 @@ function mergeTwoLists(list1, list2) {
 
 const solution = mergeTwoLists;`,
       testCases: [
-        { input: 'list-1', expectedOutput: '1->1->2->3->4->4', description: '标准用例' },
-        { input: 'list-2', expectedOutput: null, description: '两个空链表' },
+        { input: { list1: [1, 2, 4], list2: [1, 3, 4] }, expectedOutput: [1, 1, 2, 3, 4, 4], description: '标准用例' },
+        { input: { list1: [], list2: [] }, expectedOutput: [], description: '两个空链表' },
+        { input: { list1: [], list2: [0] }, expectedOutput: [0], description: '一个空链表' },
+        { input: { list1: [1, 3, 5], list2: [2, 4, 6] }, expectedOutput: [1, 2, 3, 4, 5, 6], description: '交替链表' },
       ],
       timeLimit: 1000,
     },
@@ -3521,8 +3558,11 @@ function hasCycle(head) {
 
 const solution = hasCycle;`,
       testCases: [
-        { input: 'cycle-1', expectedOutput: true, description: '有环链表' },
-        { input: 'no-cycle', expectedOutput: false, description: '无环链表' },
+        { input: { values: [3, 2, 0, -4], pos: 1 }, expectedOutput: true, description: '有环链表' },
+        { input: { values: [1, 2], pos: 0 }, expectedOutput: true, description: '首尾相连' },
+        { input: { values: [1], pos: -1 }, expectedOutput: false, description: '单节点无环' },
+        { input: { values: [1, 2, 3, 4, 5], pos: -1 }, expectedOutput: false, description: '无环链表' },
+        { input: { values: [], pos: -1 }, expectedOutput: false, description: '空链表' },
       ],
       timeLimit: 1000,
     },
@@ -3722,7 +3762,10 @@ function preorderTraversal(root) {
 
 const solution = preorderTraversal;`,
       testCases: [
-        { input: 'tree-1', expectedOutput: [1, 2, 4, 5, 3], description: '前序遍历' },
+        { input: { tree: [1, 2, 3, 4, 5] }, expectedOutput: [1, 2, 4, 5, 3], description: '前序遍历' },
+        { input: { tree: [] }, expectedOutput: [], description: '空树' },
+        { input: { tree: [1] }, expectedOutput: [1], description: '单节点' },
+        { input: { tree: [1, null, 2, 3] }, expectedOutput: [1, 2, 3], description: '右子树' },
       ],
       timeLimit: 1000,
     },
@@ -3855,8 +3898,10 @@ function maxDepth(root) {
 
 const solution = maxDepth;`,
       testCases: [
-        { input: 'tree-1', expectedOutput: 3, description: '标准二叉树' },
-        { input: null, expectedOutput: 0, description: '空树' },
+        { input: { tree: [3, 9, 20, null, null, 15, 7] }, expectedOutput: 3, description: '标准二叉树' },
+        { input: { tree: [] }, expectedOutput: 0, description: '空树' },
+        { input: { tree: [1] }, expectedOutput: 1, description: '单节点' },
+        { input: { tree: [1, 2, 3, 4, null, null, 5] }, expectedOutput: 3, description: '不平衡树' },
       ],
       timeLimit: 1000,
     },
@@ -3987,8 +4032,11 @@ function isValidBST(root) {
 
 const solution = isValidBST;`,
       testCases: [
-        { input: 'bst-1', expectedOutput: false, description: '非BST' },
-        { input: 'bst-2', expectedOutput: true, description: '有效BST' },
+        { input: { tree: [5, 1, 4, null, null, 3, 6] }, expectedOutput: false, description: '非BST' },
+        { input: { tree: [2, 1, 3] }, expectedOutput: true, description: '有效BST' },
+        { input: { tree: [] }, expectedOutput: true, description: '空树' },
+        { input: { tree: [1] }, expectedOutput: true, description: '单节点' },
+        { input: { tree: [10, 5, 15, null, null, 6, 20] }, expectedOutput: false, description: '右子树违反规则' },
       ],
       timeLimit: 1000,
     },
