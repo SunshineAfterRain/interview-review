@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { TestCase, ScoreResult, ScoreDimension } from '../types/question';
 import { useUserStore } from '../stores/useUserStore';
+import { SafeCodeExecutor } from '../utils/codeExecutor';
 
 interface CodeRunnerProps {
   questionId?: string;
@@ -20,38 +21,6 @@ interface TestResult {
   error?: string | null;
   executionTime: number;
 }
-
-// 安全执行代码
-const safeExecute = (code: string, input: any): { result: any; error: string | null; time: number } => {
-  const startTime = performance.now();
-  
-  try {
-    // 使用 Function 构造函数执行代码
-    const executeFunc = new Function('input', `
-      try {
-        ${code}
-        if (typeof solution === 'function') {
-          return solution(input);
-        }
-        return null;
-      } catch (e) {
-        return { __error__: e.message };
-      }
-    `);
-    
-    const result = executeFunc(input);
-    const endTime = performance.now();
-    
-    if (result && result.__error__) {
-      return { result: null, error: result.__error__, time: endTime - startTime };
-    }
-    
-    return { result, error: null, time: endTime - startTime };
-  } catch (e: any) {
-    const endTime = performance.now();
-    return { result: null, error: e.message, time: endTime - startTime };
-  }
-};
 
 // 代码质量分析
 const analyzeCodeQuality = (code: string): { score: number; feedback: string } => {
@@ -107,6 +76,19 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
   const [isRunning, setIsRunning] = useState(false);
   const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
   const [isSaved, setIsSaved] = useState(false);
+  
+  // Web Worker 执行器引用
+  const executorRef = useRef<SafeCodeExecutor | null>(null);
+
+  // 组件卸载时清理执行器
+  useEffect(() => {
+    return () => {
+      if (executorRef.current) {
+        executorRef.current.terminate();
+        executorRef.current = null;
+      }
+    };
+  }, []);
 
   // 当 starterCode 变化时重置代码，或加载已保存的代码
   useEffect(() => {
@@ -144,8 +126,8 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
   }, [questionId, starterCode, deleteSavedCode]);
 
   // 代码变化时标记为未保存
-  const handleCodeChange = (value: string) => {
-    setCode(value || '');
+  const handleCodeChange = (value: string | undefined) => {
+    setCode(value ?? '');
     setIsSaved(false);
   };
 
@@ -165,23 +147,35 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
       ).join(' '));
     };
     
+    // 创建新的执行器实例
+    const executor = new SafeCodeExecutor();
+    executorRef.current = executor;
+    
     try {
       for (const testCase of testCases) {
-        const { result, error, time } = safeExecute(code, testCase.input);
+        // 使用 Web Worker 沙箱安全执行代码
+        const { result, error, time, timedOut } = await executor.execute(code, testCase.input, 5000);
         
-        const passed = !error && JSON.stringify(result) === JSON.stringify(testCase.expectedOutput);
+        const passed = !error && !timedOut && JSON.stringify(result) === JSON.stringify(testCase.expectedOutput);
         
         results.push({
           passed,
           input: testCase.input,
           expected: testCase.expectedOutput,
           actual: result,
-          error,
+          error: timedOut ? '执行超时（超过5秒）' : error,
           executionTime: time
         });
+        
+        // 如果超时，停止后续测试
+        if (timedOut) {
+          break;
+        }
       }
     } finally {
       console.log = originalLog;
+      executor.terminate();
+      executorRef.current = null;
     }
     
     setTestResults(results);
@@ -290,12 +284,14 @@ export const CodeRunner: React.FC<CodeRunnerProps> = ({
             {isRunning ? (
               <>
                 <span className="loading-spinner"></span>
-                运行中...
+                <span>运行中...</span>
               </>
             ) : (
               <>
-                <span className="run-icon">▶</span>
-                运行测试
+                <svg className="run-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <span>运行测试</span>
               </>
             )}
           </button>

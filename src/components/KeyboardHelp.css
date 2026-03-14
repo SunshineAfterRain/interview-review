@@ -1,26 +1,54 @@
+/* ========================================
+   键盘帮助弹窗 - Claymorphism 设计系统
+   ======================================== */
+
 .keyboard-help-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(49, 46, 129, 0.5);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  animation: clayFadeIn 0.2s ease-out;
+}
+
+@keyframes clayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .keyboard-help-modal {
-  background: var(--bg-secondary);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  background: var(--clay-surface);
+  border: var(--clay-border);
+  border-radius: var(--clay-border-radius-xl);
   max-width: 500px;
   width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.3s ease-out;
+  box-shadow: var(--clay-shadow-hover);
+  animation: clayBounce 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes clayBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  70% {
+    transform: scale(1.02) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .help-header {
@@ -28,33 +56,39 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 3px solid var(--clay-border-color);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(129, 140, 248, 0.05));
 }
 
 .help-header h3 {
   margin: 0;
   font-size: 1.1rem;
-  color: var(--text-primary);
-  font-family: var(--font-mono);
+  color: var(--clay-text-primary);
+  font-family: var(--clay-font-display);
+  font-weight: 700;
 }
 
 .close-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--clay-border-radius-md);
+  background: var(--clay-surface-secondary);
+  border: var(--clay-border);
+  color: var(--clay-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  font-size: 1.25rem;
+  box-shadow: var(--clay-shadow-inset);
+  transition: all var(--clay-transition-normal);
 }
 
 .close-btn:hover {
-  border-color: var(--neon-cyan);
-  color: var(--neon-cyan);
+  border-color: var(--clay-primary);
+  color: var(--clay-primary);
+  box-shadow: var(--clay-shadow-combined);
+  transform: scale(1.05);
 }
 
 .help-content {
@@ -63,26 +97,41 @@
 
 .shortcuts-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 var(--clay-space-xs);
 }
 
 .shortcuts-table th,
 .shortcuts-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   text-align: left;
-  border-bottom: 1px solid var(--border-color);
 }
 
 .shortcuts-table th {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 600;
+  color: var(--clay-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  font-family: var(--clay-font-display);
+  border-bottom: 2px solid var(--clay-border-color);
+  padding-bottom: var(--clay-space-sm);
 }
 
 .shortcuts-table td {
-  color: var(--text-primary);
+  color: var(--clay-text-primary);
+  font-family: var(--clay-font-display);
+  background: var(--clay-surface-secondary);
+  border-radius: var(--clay-border-radius-sm);
+  box-shadow: var(--clay-shadow-inset);
+}
+
+.shortcuts-table tr td:first-child {
+  border-radius: var(--clay-border-radius-sm) 0 0 var(--clay-border-radius-sm);
+}
+
+.shortcuts-table tr td:last-child {
+  border-radius: 0 var(--clay-border-radius-sm) var(--clay-border-radius-sm) 0;
 }
 
 .shortcuts-table tr:last-child td {
@@ -90,41 +139,109 @@
 }
 
 .shortcut-key {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0.4rem 0.75rem;
+  background: linear-gradient(135deg, var(--clay-primary), var(--clay-secondary));
+  border: var(--clay-border);
+  border-radius: var(--clay-border-radius-sm);
+  font-family: var(--clay-font-mono);
   font-size: 0.85rem;
-  color: var(--neon-cyan);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  color: white;
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--clay-transition-normal);
+}
+
+.shortcut-key:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--clay-shadow-hover);
 }
 
 .help-footer {
   padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 3px solid var(--clay-border-color);
   text-align: center;
-  color: var(--text-muted);
+  color: var(--clay-text-muted);
   font-size: 0.85rem;
+  font-family: var(--clay-font-display);
+  background: var(--clay-surface-secondary);
 }
 
 .help-footer kbd {
-  padding: 0.2rem 0.5rem;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  padding: 0.25rem 0.5rem;
+  background: var(--clay-surface);
+  border: var(--clay-border);
+  border-radius: var(--clay-border-radius-sm);
+  font-family: var(--clay-font-mono);
   font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clay-primary);
+  box-shadow: var(--clay-shadow-inset);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* ========================================
+   响应式设计
+   ======================================== */
+
+@media (max-width: 768px) {
+  .keyboard-help-modal {
+    max-width: 95%;
+    margin: var(--clay-space-sm);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .help-header {
+    padding: 1rem;
+  }
+  
+  .help-content {
+    padding: 1rem;
+  }
+  
+  .shortcuts-table th,
+  .shortcuts-table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .shortcut-key {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+    min-width: 28px;
+  }
+  
+  .help-footer {
+    padding: 0.85rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .keyboard-help-modal {
+    width: 98%;
+    margin: var(--clay-space-xs);
+  }
+  
+  .help-header h3 {
+    font-size: 1rem;
+  }
+  
+  .close-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .shortcuts-table th,
+  .shortcuts-table td {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  .shortcut-key {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.7rem;
+    min-width: 24px;
   }
 }

@@ -278,18 +278,30 @@ export const AnswerPanel: React.FC<AnswerPanelProps> = ({
           
           <div className="code-actions">
             <button 
-              className="run-button"
+              className="run-btn"
               onClick={runCode}
               disabled={isRunning}
             >
-              {isRunning ? '⏳ 运行中...' : '▶️ 运行代码'}
+              {isRunning ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  <span>运行中...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="run-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <span>运行代码</span>
+                </>
+              )}
             </button>
             {consoleMessages.length > 0 && (
               <button 
-                className="clear-button"
+                className="reset-btn"
                 onClick={clearConsole}
               >
-                🗑️ 清空控制台
+                清空控制台
               </button>
             )}
           </div>

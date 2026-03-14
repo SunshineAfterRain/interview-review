@@ -1,6 +1,53 @@
 /* ========================================
-   主题系统 - 支持暗色/亮色主题切换
+   主题系统 - Claymorphism 设计系统
+   支持暗色/亮色主题切换
    ======================================== */
+
+/* ========================================
+   统一间距系统 - UX 最佳实践
+   ======================================== */
+:root {
+  /* 基础间距单位 (基于 4px 网格系统) */
+  --space-1: 4px;   /* 最小间距 */
+  --space-2: 8px;   /* 相邻可点击元素最小间距 */
+  --space-3: 12px;  /* 组件内部间距 */
+  --space-4: 16px;  /* 卡片间距、组件外部间距 */
+  --space-5: 20px;  /* 中等间距 */
+  --space-6: 24px;  /* 大间距 */
+  --space-8: 32px;  /* 区块间距 */
+  --space-10: 40px; /* 大区块间距 */
+  --space-12: 48px; /* 页面区块间距 */
+  
+  /* 组件内边距 */
+  --padding-xs: var(--space-2);    /* 8px */
+  --padding-sm: var(--space-3);    /* 12px */
+  --padding-md: var(--space-4);    /* 16px */
+  --padding-lg: var(--space-6);    /* 24px */
+  --padding-xl: var(--space-8);    /* 32px */
+  
+  /* 组件外边距 */
+  --margin-xs: var(--space-2);     /* 8px */
+  --margin-sm: var(--space-3);     /* 12px */
+  --margin-md: var(--space-4);     /* 16px */
+  --margin-lg: var(--space-6);     /* 24px */
+  --margin-xl: var(--space-8);     /* 32px */
+  
+  /* 卡片间距 */
+  --card-gap: var(--space-4);      /* 16px - 卡片之间间距 */
+  --card-padding: var(--space-4);  /* 16px - 卡片内部间距 */
+  
+  /* 按钮间距 */
+  --btn-gap: var(--space-3);       /* 12px - 相邻按钮最小间距 */
+  
+  /* 表单元素间距 */
+  --form-gap: var(--space-3);      /* 12px - 表单元素间距 */
+  
+  /* 文本内容最大宽度 */
+  --content-max-width: 75ch;       /* 最佳阅读宽度 */
+  
+  /* 容器最大宽度 */
+  --container-max-width: 1400px;
+}
 
 /* ========================================
    微交互变量 - 过渡和动画配置
@@ -28,8 +75,8 @@
   --breakpoint-2xl: 1440px;
   
   /* 圆角 */
-  --radius-sm: 6px;
-  --radius-md: 10px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
@@ -47,6 +94,27 @@
   --z-popover: 500;
   --z-tooltip: 600;
   
+  /* Claymorphism 圆角 */
+  --clay-border-radius-sm: 12px;
+  --clay-border-radius-md: 16px;
+  --clay-border-radius-lg: 20px;
+  --clay-border-radius-xl: 24px;
+  --clay-border-radius-full: 9999px;
+  
+  /* Claymorphism 过渡 */
+  --clay-transition-fast: 150ms ease-out;
+  --clay-transition-normal: 200ms ease-out;
+  --clay-transition-slow: 300ms ease-out;
+  
+  /* Claymorphism 字体 */
+  --clay-font-display: 'Baloo 2', 'Comic Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --clay-font-body: 'Comic Neue', 'Baloo 2', cursive, sans-serif;
+  
+  /* Claymorphism 间距 */
+  --clay-space-sm: 8px;
+  --clay-space-md: 16px;
+  --clay-space-lg: 24px;
+  
   /* 按钮间距规范 */
   --btn-gap-xs: 4px;
   --btn-gap-sm: 8px;
@@ -56,138 +124,182 @@
   
   /* 按钮尺寸规范 */
   --btn-height-sm: 32px;
-  --btn-height-md: 36px;
-  --btn-height-lg: 40px;
-  --btn-height-xl: 44px;
+  --btn-height-md: 40px;
+  --btn-height-lg: 48px;
+  --btn-height-xl: 56px;
   
   /* 按钮内边距规范 */
   --btn-padding-sm: 6px 12px;
-  --btn-padding-md: 8px 16px;
-  --btn-padding-lg: 10px 20px;
-  --btn-padding-xl: 12px 24px;
+  --btn-padding-md: 10px 18px;
+  --btn-padding-lg: 12px 24px;
+  --btn-padding-xl: 14px 32px;
+  
+  /* 按钮圆角规范 */
+  --btn-border-radius: 12px;
+  
+  /* 按钮字体规范 */
+  --btn-font-size: 0.95rem;
+  --btn-font-weight: 600;
+  
+  /* 按钮过渡时间 */
+  --btn-transition: var(--transition-normal);
 }
 
-/* 暗色主题（默认） */
+/* ========================================
+   暗色主题（默认）- Claymorphism 风格
+   ======================================== */
 [data-theme="dark"] {
+  /* Claymorphism 核心颜色 */
+  --clay-primary: #4F46E5;
+  --clay-secondary: #818CF8;
+  --clay-accent: #22C55E;
+  --clay-warning: #F59E0B;
+  --clay-error: #EF4444;
+  --clay-success: #22C55E;
+  
   /* 背景色 */
-  --bg-primary: #0a0e17;
-  --bg-secondary: #0f1520;
-  --bg-tertiary: #151d2e;
-  --bg-card: rgba(15, 21, 32, 0.7);
-  --bg-hover: #1e293b;
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #252542;
+  --bg-card: rgba(26, 26, 46, 0.8);
+  --bg-hover: #2d2d4a;
   
-  /* 霓虹色彩 */
-  --neon-cyan: #00f5ff;
-  --neon-magenta: #ff00ff;
-  --neon-green: #00ff88;
-  --neon-yellow: #ffd93d;
-  --neon-orange: #ff6b35;
-  --neon-purple: #bf00ff;
-  --neon-blue: #00d4ff;
-  
-  /* 主题色 */
-  --primary-color: var(--neon-cyan);
-  --primary-glow: rgba(0, 245, 255, 0.4);
-  --secondary-color: var(--neon-purple);
-  --accent-color: var(--neon-green);
+  /* Claymorphism 表面 */
+  --clay-surface: #1e1e35;
+  --clay-surface-secondary: #252542;
+  --clay-surface-hover: #2d2d4a;
   
   /* 文字颜色 */
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0aec0;
-  --text-muted: #64748b;
+  --text-primary: #e8e8f0;
+  --text-secondary: #a0a0b8;
+  --text-muted: #6b6b80;
   
-  /* 边框和分隔线 */
-  --border-color: rgba(0, 245, 255, 0.2);
-  --border-glow: rgba(0, 245, 255, 0.5);
+  --clay-text-primary: #e8e8f0;
+  --clay-text-secondary: #a0a0b8;
+  --clay-text-muted: #6b6b80;
+  
+  /* 边框 */
+  --border-color: rgba(79, 70, 229, 0.3);
+  --border-glow: rgba(79, 70, 229, 0.5);
+  --clay-border-color: rgba(79, 70, 229, 0.25);
+  
+  /* Claymorphism 边框 */
+  --clay-border: 3px solid var(--clay-border-color);
+  
+  /* Claymorphism 阴影 */
+  --clay-shadow-light: rgba(0, 0, 0, 0.15);
+  --clay-shadow-dark: rgba(0, 0, 0, 0.25);
+  --clay-shadow-primary: rgba(79, 70, 229, 0.15);
+  
+  --clay-shadow-outer: 0 8px 32px var(--clay-shadow-dark);
+  --clay-shadow-inner: inset 0 2px 8px var(--clay-shadow-light);
+  --clay-shadow-combined: 
+    var(--clay-shadow-outer),
+    var(--clay-shadow-inner),
+    0 0 0 1px rgba(79, 70, 229, 0.1);
+  --clay-shadow-hover: 
+    0 12px 40px var(--clay-shadow-dark),
+    inset 0 2px 8px var(--clay-shadow-light),
+    0 0 0 1px rgba(79, 70, 229, 0.2),
+    0 0 20px var(--clay-shadow-primary);
   
   /* 状态颜色 */
-  --success-color: var(--neon-green);
-  --warning-color: var(--neon-yellow);
-  --error-color: #ff6b6b;
-  --info-color: var(--neon-blue);
-  
-  /* 阴影 */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px var(--primary-glow);
-  --shadow-neon-cyan: 0 0 20px rgba(0, 245, 255, 0.3), 0 0 40px rgba(0, 245, 255, 0.1);
-  --shadow-neon-magenta: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(255, 0, 255, 0.1);
-  --shadow-neon-green: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(0, 255, 136, 0.1);
+  --success-color: var(--clay-success);
+  --warning-color: var(--clay-warning);
+  --error-color: var(--clay-error);
+  --info-color: var(--clay-secondary);
   
   /* 玻璃态效果 */
-  --glass-bg: rgba(15, 21, 32, 0.6);
-  --glass-border: rgba(0, 245, 255, 0.15);
+  --glass-bg: rgba(26, 26, 46, 0.7);
+  --glass-border: rgba(79, 70, 229, 0.2);
   --glass-blur: 20px;
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   
   /* 背景渐变 */
   --bg-gradient: 
-    radial-gradient(ellipse at top, rgba(0, 245, 255, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(191, 0, 255, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at top, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(129, 140, 248, 0.05) 0%, transparent 50%);
 }
 
-/* 亮色主题 */
+/* ========================================
+   亮色主题 - Claymorphism 风格
+   ======================================== */
 [data-theme="light"] {
-  /* 背景色 */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --bg-card: rgba(255, 255, 255, 0.8);
-  --bg-hover: #e2e8f0;
+  /* Claymorphism 核心颜色 */
+  --clay-primary: #4F46E5;
+  --clay-secondary: #818CF8;
+  --clay-accent: #22C55E;
+  --clay-warning: #F59E0B;
+  --clay-error: #EF4444;
+  --clay-success: #22C55E;
   
-  /* 主题色 */
-  --primary-color: #0891b2;
-  --primary-glow: rgba(8, 145, 178, 0.3);
-  --secondary-color: #7c3aed;
-  --accent-color: #10b981;
+  /* 背景色 */
+  --bg-primary: #EEF2FF;
+  --bg-secondary: #E0E7FF;
+  --bg-tertiary: #C7D2FE;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-hover: #C7D2FE;
+  
+  /* Claymorphism 表面 */
+  --clay-surface: #ffffff;
+  --clay-surface-secondary: #f0f4ff;
+  --clay-surface-hover: #e0e7ff;
   
   /* 文字颜色 */
-  --text-primary: #1e293b;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #312E81;
+  --text-secondary: #4338CA;
+  --text-muted: #6366F1;
   
-  /* 边框和分隔线 */
-  --border-color: #e2e8f0;
-  --border-glow: rgba(8, 145, 178, 0.4);
+  --clay-text-primary: #312E81;
+  --clay-text-secondary: #4338CA;
+  --clay-text-muted: #6366F1;
+  
+  /* 边框 */
+  --border-color: rgba(79, 70, 229, 0.25);
+  --border-glow: rgba(79, 70, 229, 0.4);
+  --clay-border-color: rgba(79, 70, 229, 0.2);
+  
+  /* Claymorphism 边框 */
+  --clay-border: 3px solid var(--clay-border-color);
+  
+  /* Claymorphism 阴影 - 亮色主题更柔和 */
+  --clay-shadow-light: rgba(79, 70, 229, 0.08);
+  --clay-shadow-dark: rgba(79, 70, 229, 0.12);
+  --clay-shadow-primary: rgba(79, 70, 229, 0.1);
+  
+  --clay-shadow-outer: 0 8px 24px var(--clay-shadow-dark);
+  --clay-shadow-inner: inset 0 2px 6px var(--clay-shadow-light);
+  --clay-shadow-combined: 
+    var(--clay-shadow-outer),
+    var(--clay-shadow-inner),
+    0 0 0 1px rgba(79, 70, 229, 0.08);
+  --clay-shadow-hover: 
+    0 12px 32px var(--clay-shadow-dark),
+    inset 0 2px 6px var(--clay-shadow-light),
+    0 0 0 1px rgba(79, 70, 229, 0.15),
+    0 0 16px var(--clay-shadow-primary);
   
   /* 状态颜色 */
-  --success-color: #10b981;
-  --warning-color: #f59e0b;
-  --error-color: #ef4444;
-  --info-color: #3b82f6;
-  
-  /* 阴影 */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
-  --shadow-glow: 0 0 20px var(--primary-glow);
-  --shadow-neon-cyan: 0 0 20px rgba(8, 145, 178, 0.2), 0 0 40px rgba(8, 145, 178, 0.1);
-  --shadow-neon-magenta: 0 0 20px rgba(124, 58, 237, 0.2), 0 0 40px rgba(124, 58, 237, 0.1);
-  --shadow-neon-green: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1);
+  --success-color: var(--clay-success);
+  --warning-color: var(--clay-warning);
+  --error-color: var(--clay-error);
+  --info-color: var(--clay-secondary);
   
   /* 玻璃态效果 */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(8, 145, 178, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(79, 70, 229, 0.15);
   --glass-blur: 20px;
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --glass-shadow: 0 8px 32px rgba(79, 70, 229, 0.1);
   
   /* 背景渐变 */
   --bg-gradient: 
-    radial-gradient(ellipse at top, rgba(8, 145, 178, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
-  
-  /* 亮色主题特殊变量 */
-  --neon-cyan: #0891b2;
-  --neon-magenta: #7c3aed;
-  --neon-green: #10b981;
-  --neon-yellow: #f59e0b;
-  --neon-orange: #f97316;
-  --neon-purple: #7c3aed;
-  --neon-blue: #3b82f6;
+    radial-gradient(ellipse at top, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(129, 140, 248, 0.03) 0%, transparent 50%);
 }
 
-/* 主题切换过渡效果 */
+/* ========================================
+   主题切换过渡效果
+   ======================================== */
 * {
   transition: background-color 0.3s ease, 
               color 0.3s ease, 
@@ -239,27 +351,30 @@
 /* 脉冲发光 */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px var(--primary-glow);
+    box-shadow: var(--clay-shadow-combined);
   }
   50% {
-    box-shadow: 0 0 40px var(--primary-glow), 0 0 60px var(--primary-glow);
+    box-shadow: var(--clay-shadow-hover);
   }
 }
 
-/* 霓虹闪烁 */
-@keyframes neon-flicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-    text-shadow: 
-      0 0 5px var(--neon-cyan),
-      0 0 10px var(--neon-cyan),
-      0 0 20px var(--neon-cyan),
-      0 0 40px var(--neon-cyan);
-    opacity: 1;
-  }
-  20%, 24%, 55% {
-    text-shadow: none;
-    opacity: 0.8;
-  }
+/* Claymorphism 弹跳动画 */
+@keyframes clay-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Claymorphism 脉冲动画 */
+@keyframes clay-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Claymorphism 浮动动画 */
+@keyframes clay-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-4px) rotate(1deg); }
+  75% { transform: translateY(4px) rotate(-1deg); }
 }
 
 /* 渐变流动 */
@@ -435,8 +550,8 @@
 .spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--neon-cyan);
+  border: 3px solid var(--clay-border-color);
+  border-top-color: var(--clay-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -528,13 +643,13 @@
   /* 保留必要的视觉反馈 */
   .spinner {
     animation: none;
-    border-top-color: var(--neon-cyan);
+    border-top-color: var(--clay-primary);
     opacity: 0.6;
   }
   
   /* 保留焦点状态 */
   *:focus {
-    outline: 2px solid var(--neon-cyan) !important;
+    outline: 2px solid var(--clay-primary) !important;
     outline-offset: 2px !important;
   }
 }
@@ -549,7 +664,7 @@
 }
 
 *:focus-visible {
-  outline: 2px solid var(--neon-cyan);
+  outline: 2px solid var(--clay-primary);
   outline-offset: 2px;
   transition: outline-offset var(--transition-fast);
 }
@@ -559,16 +674,16 @@ button:focus-visible,
 .btn:focus-visible,
 .nav-link:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--neon-cyan);
+  outline: 2px solid var(--clay-primary);
   outline-offset: 3px;
-  box-shadow: 0 0 0 4px var(--primary-glow);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
 }
 
 /* 输入框焦点样式 */
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--neon-cyan);
+  outline: 2px solid var(--clay-primary);
   outline-offset: 0;
 }
 
@@ -612,7 +727,7 @@ button:disabled,
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--clay-shadow-hover);
 }
 
 /* 按钮悬停效果 */
@@ -634,7 +749,7 @@ button:disabled,
 }
 
 .hover-glow:hover {
-  box-shadow: var(--shadow-neon-cyan);
+  box-shadow: var(--clay-shadow-hover);
 }
 
 /* 颜色过渡 */
@@ -652,7 +767,7 @@ button:disabled,
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
+  border: var(--clay-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--glass-shadow);
   transition: all var(--transition-normal);
@@ -660,39 +775,231 @@ button:disabled,
 
 .glass-card:hover {
   border-color: var(--border-glow);
-  box-shadow: var(--shadow-neon-cyan);
+  box-shadow: var(--clay-shadow-hover);
   transform: translateY(-2px);
 }
 
 /* ========================================
-   霓虹效果工具类
+   Claymorphism 工具类
    ======================================== */
 
-.neon-text-cyan {
-  color: var(--neon-cyan);
-  text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+.clay-text-primary {
+  color: var(--clay-primary);
 }
 
-.neon-text-magenta {
-  color: var(--neon-magenta);
-  text-shadow: 0 0 10px var(--neon-magenta), 0 0 20px var(--neon-magenta);
+.clay-text-secondary {
+  color: var(--clay-secondary);
 }
 
-.neon-text-green {
-  color: var(--neon-green);
-  text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+.clay-text-accent {
+  color: var(--clay-accent);
 }
 
-.neon-border {
-  border: 1px solid var(--neon-cyan);
-  box-shadow: 
-    0 0 5px var(--neon-cyan),
-    inset 0 0 5px rgba(0, 245, 255, 0.1);
+.clay-border {
+  border: var(--clay-border);
 }
 
-.neon-border-magenta {
-  border: 1px solid var(--neon-magenta);
-  box-shadow: 
-    0 0 5px var(--neon-magenta),
-    inset 0 0 5px rgba(255, 0, 255, 0.1);
+.clay-shadow {
+  box-shadow: var(--clay-shadow-combined);
+}
+
+.clay-shadow-hover {
+  box-shadow: var(--clay-shadow-hover);
+}
+
+/* Claymorphism 卡片基础类 */
+.clay-card {
+  background: var(--clay-surface);
+  border: var(--clay-border);
+  border-radius: var(--clay-border-radius-lg);
+  padding: var(--clay-space-lg);
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--clay-transition-normal);
+}
+
+.clay-card:hover {
+  box-shadow: var(--clay-shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Claymorphism 按钮基础类 */
+.clay-btn {
+  padding: var(--clay-space-sm) var(--clay-space-lg);
+  background: linear-gradient(135deg, var(--clay-primary), var(--clay-secondary));
+  color: white;
+  border: var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  font-weight: 600;
+  font-family: var(--clay-font-display);
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--clay-transition-normal);
+}
+
+.clay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-hover);
+}
+
+.clay-btn:active {
+  transform: translateY(0);
+}
+
+/* Claymorphism 输入框基础类 */
+.clay-input {
+  padding: var(--clay-space-sm) var(--clay-space-md);
+  background: var(--clay-surface-secondary);
+  border: var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  color: var(--clay-text-primary);
+  font-family: var(--clay-font-body);
+  box-shadow: var(--clay-shadow-inset);
+  transition: all var(--clay-transition-normal);
+}
+
+.clay-input:focus {
+  outline: none;
+  border-color: var(--clay-primary);
+  box-shadow: var(--clay-shadow-combined), 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* ========================================
+   全局按钮样式系统
+   ======================================== */
+
+/* 主要按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--clay-primary), var(--clay-secondary));
+  color: white;
+  padding: var(--btn-padding-lg);
+  border: 3px solid var(--clay-primary);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--clay-font-display);
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--btn-transition);
+  min-height: var(--btn-height-lg);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-hover);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 次要按钮 */
+.btn-secondary {
+  background: var(--clay-surface-secondary);
+  color: var(--clay-text-primary);
+  padding: var(--btn-padding-lg);
+  border: 3px solid var(--clay-border);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--clay-font-display);
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-inset);
+  transition: all var(--btn-transition);
+  min-height: var(--btn-height-lg);
+}
+
+.btn-secondary:hover {
+  border-color: var(--clay-primary);
+  color: var(--clay-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-combined);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* 危险按钮 */
+.btn-danger {
+  background: var(--clay-surface-secondary);
+  color: var(--clay-error);
+  padding: var(--btn-padding-lg);
+  border: 3px solid var(--clay-error);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--clay-font-display);
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-inset);
+  transition: all var(--btn-transition);
+  min-height: var(--btn-height-lg);
+}
+
+.btn-danger:hover {
+  background: var(--clay-error);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-combined);
+}
+
+.btn-danger:active {
+  transform: translateY(0);
+}
+
+/* 成功按钮 */
+.btn-success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(74, 222, 128, 0.9));
+  color: white;
+  padding: var(--btn-padding-lg);
+  border: 3px solid var(--clay-success);
+  border-radius: var(--btn-border-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--clay-font-display);
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--btn-transition);
+  min-height: var(--btn-height-lg);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-hover);
+}
+
+.btn-success:active {
+  transform: translateY(0);
+}
+
+/* 小尺寸按钮 */
+.btn-sm {
+  padding: var(--btn-padding-sm);
+  min-height: var(--btn-height-sm);
+  font-size: 0.85rem;
+}
+
+/* 中等尺寸按钮 */
+.btn-md {
+  padding: var(--btn-padding-md);
+  min-height: var(--btn-height-md);
+  font-size: 0.9rem;
+}
+
+/* 大尺寸按钮 */
+.btn-lg {
+  padding: var(--btn-padding-lg);
+  min-height: var(--btn-height-lg);
+}
+
+/* 超大尺寸按钮 */
+.btn-xl {
+  padding: var(--btn-padding-xl);
+  min-height: var(--btn-height-xl);
+  font-size: 1rem;
 }

@@ -1,4 +1,4 @@
-export type Category = 'javascript' | 'react' | 'css' | 'performance' | 'engineering' | 'coding';
+export type Category = 'javascript' | 'react' | 'css' | 'performance' | 'engineering' | 'coding' | 'typescript' | 'algorithm' | 'system-design' | 'toolchain';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -88,6 +88,10 @@ export const CATEGORIES: CategoryInfo[] = [
   { key: 'javascript', label: 'JavaScript', icon: '🟨', color: '#f7df1e' },
   { key: 'react', label: 'React', icon: '⚛️', color: '#61dafb' },
   { key: 'css', label: 'CSS', icon: '🎨', color: '#264de4' },
+  { key: 'typescript', label: 'TypeScript', icon: '📘', color: '#3178c6' },
+  { key: 'algorithm', label: '算法', icon: '🧮', color: '#e91e63' },
+  { key: 'system-design', label: '系统设计', icon: '🏗️', color: '#9c27b0' },
+  { key: 'toolchain', label: '工具链', icon: '⚙️', color: '#607d8b' },
   { key: 'performance', label: '性能优化', icon: '⚡', color: '#ff6b6b' },
   { key: 'engineering', label: '工程化', icon: '🔧', color: '#4ecdc4' },
   { key: 'coding', label: '编程题', icon: '💻', color: '#00ff88' },

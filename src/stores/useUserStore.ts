@@ -288,5 +288,6 @@ function calculateStats(progress: UserProgress): UserStats {
     totalTimeSpent,
     streak,
     lastStudyDate: dates[0] || '',
-  };
+    totalStudyDays: dates.length,
+  } as UserStats;
 }

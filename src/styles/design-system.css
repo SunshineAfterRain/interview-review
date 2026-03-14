@@ -1,0 +1,703 @@
+/* ========================================
+   Claymorphism 设计系统
+   Soft 3D, Chunky, Playful, Toy-like, Bubbly
+   ======================================== */
+
+/* 引入字体 */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Comic+Neue:wght@400;700&display=swap');
+
+/* ========================================
+   CSS 变量定义
+   ======================================== */
+:root {
+  /* 主色调 - Claymorphism 配色 */
+  --clay-primary: #4F46E5;
+  --clay-primary-light: #6366F1;
+  --clay-primary-dark: #4338CA;
+  --clay-secondary: #818CF8;
+  --clay-secondary-light: #A5B4FC;
+  --clay-cta: #22C55E;
+  --clay-cta-light: #4ADE80;
+  --clay-cta-dark: #16A34A;
+  
+  /* 背景色 */
+  --clay-bg-primary: #EEF2FF;
+  --clay-bg-secondary: #E0E7FF;
+  --clay-bg-tertiary: #C7D2FE;
+  --clay-bg-card: #FFFFFF;
+  --clay-bg-hover: #DBEAFE;
+  
+  /* 文字颜色 */
+  --clay-text-primary: #312E81;
+  --clay-text-secondary: #4338CA;
+  --clay-text-muted: #6366F1;
+  --clay-text-light: #818CF8;
+  
+  /* 边框颜色 */
+  --clay-border: #C7D2FE;
+  --clay-border-light: #DBEAFE;
+  --clay-border-dark: #A5B4FC;
+  
+  /* 状态颜色 */
+  --clay-success: #22C55E;
+  --clay-success-light: #86EFAC;
+  --clay-warning: #F59E0B;
+  --clay-warning-light: #FCD34D;
+  --clay-error: #EF4444;
+  --clay-error-light: #FCA5A5;
+  --clay-info: #3B82F6;
+  --clay-info-light: #93C5FD;
+  
+  /* Claymorphism 特效 */
+  --clay-border-width: 3px;
+  --clay-border-radius-sm: 12px;
+  --clay-border-radius-md: 16px;
+  --clay-border-radius-lg: 20px;
+  --clay-border-radius-xl: 24px;
+  --clay-border-radius-full: 9999px;
+  
+  /* 双阴影 - Claymorphism 核心 */
+  --clay-shadow-inner: inset 2px 2px 4px rgba(0, 0, 0, 0.08),
+                       inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+  --clay-shadow-outer: 4px 4px 8px rgba(79, 70, 229, 0.15),
+                       -2px -2px 6px rgba(255, 255, 255, 0.8);
+  --clay-shadow-combined: var(--clay-shadow-inner), var(--clay-shadow-outer);
+  --clay-shadow-hover: 6px 6px 12px rgba(79, 70, 229, 0.2),
+                       -3px -3px 8px rgba(255, 255, 255, 0.9);
+  --clay-shadow-active: inset 3px 3px 6px rgba(0, 0, 0, 0.1),
+                        inset -1px -1px 3px rgba(255, 255, 255, 0.7);
+  --clay-shadow-float: 8px 8px 16px rgba(79, 70, 229, 0.18),
+                       -4px -4px 10px rgba(255, 255, 255, 0.95);
+  
+  /* 字体 */
+  --clay-font-primary: 'Baloo 2', 'Comic Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --clay-font-secondary: 'Comic Neue', 'Baloo 2', cursive, sans-serif;
+  --clay-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  
+  /* 过渡 */
+  --clay-transition-fast: 150ms ease-out;
+  --clay-transition-normal: 200ms ease-out;
+  --clay-transition-slow: 300ms ease-out;
+  
+  /* 响应式断点 */
+  --clay-breakpoint-xs: 375px;
+  --clay-breakpoint-sm: 640px;
+  --clay-breakpoint-md: 768px;
+  --clay-breakpoint-lg: 1024px;
+  --clay-breakpoint-xl: 1280px;
+  --clay-breakpoint-2xl: 1440px;
+  
+  /* Z-index */
+  --clay-z-dropdown: 50;
+  --clay-z-sticky: 100;
+  --clay-z-fixed: 200;
+  --clay-z-modal: 400;
+  --clay-z-tooltip: 600;
+}
+
+/* ========================================
+   Claymorphism 基础组件类
+   ======================================== */
+
+/* Clay 卡片 */
+.clay-card {
+  background: var(--clay-bg-card);
+  border: var(--clay-border-width) solid var(--clay-border);
+  border-radius: var(--clay-border-radius-lg);
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--clay-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.clay-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--clay-primary), var(--clay-secondary), var(--clay-cta));
+  border-radius: var(--clay-border-radius-lg) var(--clay-border-radius-lg) 0 0;
+}
+
+.clay-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--clay-shadow-float);
+  border-color: var(--clay-primary-light);
+}
+
+.clay-card:active {
+  transform: translateY(0);
+  box-shadow: var(--clay-shadow-active);
+}
+
+/* Clay 按钮 */
+.clay-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-family: var(--clay-font-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  border: var(--clay-border-width) solid var(--clay-primary);
+  border-radius: var(--clay-border-radius-md);
+  background: linear-gradient(135deg, var(--clay-primary-light), var(--clay-primary));
+  color: white;
+  box-shadow: var(--clay-shadow-combined);
+  cursor: pointer;
+  transition: all var(--clay-transition-normal);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  min-height: 48px;
+}
+
+.clay-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left var(--clay-transition-slow);
+}
+
+.clay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-hover);
+  border-color: var(--clay-primary-dark);
+}
+
+.clay-btn:hover::before {
+  left: 100%;
+}
+
+.clay-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--clay-shadow-active);
+}
+
+.clay-btn:focus-visible {
+  outline: 3px solid var(--clay-secondary-light);
+  outline-offset: 3px;
+}
+
+.clay-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: var(--clay-shadow-combined);
+}
+
+/* Clay 按钮变体 */
+.clay-btn-secondary {
+  background: linear-gradient(135deg, var(--clay-secondary-light), var(--clay-secondary));
+  border-color: var(--clay-secondary);
+}
+
+.clay-btn-secondary:hover {
+  border-color: var(--clay-primary);
+}
+
+.clay-btn-cta {
+  background: linear-gradient(135deg, var(--clay-cta-light), var(--clay-cta));
+  border-color: var(--clay-cta);
+}
+
+.clay-btn-cta:hover {
+  border-color: var(--clay-cta-dark);
+}
+
+.clay-btn-outline {
+  background: var(--clay-bg-card);
+  color: var(--clay-primary);
+  border-color: var(--clay-primary);
+}
+
+.clay-btn-outline:hover {
+  background: var(--clay-bg-hover);
+  color: var(--clay-primary-dark);
+}
+
+.clay-btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--clay-text-primary);
+  box-shadow: none;
+}
+
+.clay-btn-ghost:hover {
+  background: var(--clay-bg-hover);
+  box-shadow: var(--clay-shadow-inner);
+}
+
+/* Clay 按钮尺寸 */
+.clay-btn-sm {
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  min-height: 36px;
+  border-radius: var(--clay-border-radius-sm);
+}
+
+.clay-btn-lg {
+  padding: 16px 32px;
+  font-size: 1.125rem;
+  min-height: 56px;
+  border-radius: var(--clay-border-radius-lg);
+}
+
+/* Clay 输入框 */
+.clay-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--clay-font-primary);
+  font-size: 1rem;
+  color: var(--clay-text-primary);
+  background: var(--clay-bg-card);
+  border: var(--clay-border-width) solid var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  box-shadow: var(--clay-shadow-inner);
+  transition: all var(--clay-transition-normal);
+  outline: none;
+}
+
+.clay-input::placeholder {
+  color: var(--clay-text-muted);
+  opacity: 0.7;
+}
+
+.clay-input:hover {
+  border-color: var(--clay-border-dark);
+}
+
+.clay-input:focus {
+  border-color: var(--clay-primary);
+  box-shadow: var(--clay-shadow-inner), 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.clay-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--clay-bg-secondary);
+}
+
+/* Clay 选择框 */
+.clay-select {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  font-family: var(--clay-font-primary);
+  font-size: 1rem;
+  color: var(--clay-text-primary);
+  background: var(--clay-bg-card);
+  border: var(--clay-border-width) solid var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  box-shadow: var(--clay-shadow-inner);
+  transition: all var(--clay-transition-normal);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234F46E5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+}
+
+.clay-select:hover {
+  border-color: var(--clay-border-dark);
+}
+
+.clay-select:focus {
+  border-color: var(--clay-primary);
+  box-shadow: var(--clay-shadow-inner), 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.clay-select option {
+  background: var(--clay-bg-card);
+  color: var(--clay-text-primary);
+  padding: 8px;
+}
+
+/* Clay 文本域 */
+.clay-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--clay-font-primary);
+  font-size: 1rem;
+  color: var(--clay-text-primary);
+  background: var(--clay-bg-card);
+  border: var(--clay-border-width) solid var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  box-shadow: var(--clay-shadow-inner);
+  transition: all var(--clay-transition-normal);
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.clay-textarea::placeholder {
+  color: var(--clay-text-muted);
+  opacity: 0.7;
+}
+
+.clay-textarea:hover {
+  border-color: var(--clay-border-dark);
+}
+
+.clay-textarea:focus {
+  border-color: var(--clay-primary);
+  box-shadow: var(--clay-shadow-inner), 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Clay 徽章 */
+.clay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-family: var(--clay-font-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--clay-border-radius-full);
+  border: 2px solid;
+  box-shadow: var(--clay-shadow-inner);
+  transition: all var(--clay-transition-fast);
+}
+
+.clay-badge-primary {
+  background: linear-gradient(135deg, var(--clay-primary-light), var(--clay-primary));
+  border-color: var(--clay-primary);
+  color: white;
+}
+
+.clay-badge-secondary {
+  background: linear-gradient(135deg, var(--clay-secondary-light), var(--clay-secondary));
+  border-color: var(--clay-secondary);
+  color: white;
+}
+
+.clay-badge-success {
+  background: linear-gradient(135deg, var(--clay-cta-light), var(--clay-cta));
+  border-color: var(--clay-cta);
+  color: white;
+}
+
+.clay-badge-warning {
+  background: linear-gradient(135deg, var(--clay-warning-light), var(--clay-warning));
+  border-color: var(--clay-warning);
+  color: var(--clay-text-primary);
+}
+
+.clay-badge-error {
+  background: linear-gradient(135deg, var(--clay-error-light), var(--clay-error));
+  border-color: var(--clay-error);
+  color: white;
+}
+
+.clay-badge-outline {
+  background: var(--clay-bg-card);
+  border-color: var(--clay-primary);
+  color: var(--clay-primary);
+}
+
+/* Clay 标签 */
+.clay-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: var(--clay-font-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: var(--clay-bg-secondary);
+  border: 2px solid var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  color: var(--clay-text-primary);
+  box-shadow: var(--clay-shadow-inner);
+  transition: all var(--clay-transition-fast);
+  cursor: pointer;
+}
+
+.clay-tag:hover {
+  background: var(--clay-bg-hover);
+  border-color: var(--clay-primary-light);
+  transform: translateY(-1px);
+}
+
+.clay-tag.active {
+  background: linear-gradient(135deg, var(--clay-primary-light), var(--clay-primary));
+  border-color: var(--clay-primary);
+  color: white;
+  box-shadow: var(--clay-shadow-combined);
+}
+
+/* Clay 导航项 */
+.clay-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  font-family: var(--clay-font-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--clay-text-primary);
+  background: var(--clay-bg-card);
+  border: var(--clay-border-width) solid var(--clay-border);
+  border-radius: var(--clay-border-radius-md);
+  text-decoration: none;
+  box-shadow: var(--clay-shadow-combined);
+  transition: all var(--clay-transition-normal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.clay-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left var(--clay-transition-slow);
+}
+
+.clay-nav-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--clay-shadow-hover);
+  border-color: var(--clay-primary-light);
+}
+
+.clay-nav-item:hover::before {
+  left: 100%;
+}
+
+.clay-nav-item.active {
+  background: linear-gradient(135deg, var(--clay-primary-light), var(--clay-primary));
+  border-color: var(--clay-primary);
+  color: white;
+  box-shadow: var(--clay-shadow-hover);
+}
+
+/* Clay 分割线 */
+.clay-divider {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--clay-border), transparent);
+  border-radius: 2px;
+  margin: 16px 0;
+}
+
+/* Clay 加载器 */
+.clay-loader {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--clay-border);
+  border-top-color: var(--clay-primary);
+  border-radius: 50%;
+  animation: clay-spin 0.8s ease-in-out infinite;
+}
+
+@keyframes clay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.clay-loader-sm {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+.clay-loader-lg {
+  width: 64px;
+  height: 64px;
+  border-width: 5px;
+}
+
+/* Clay 进度条 */
+.clay-progress {
+  width: 100%;
+  height: 12px;
+  background: var(--clay-bg-secondary);
+  border: 2px solid var(--clay-border);
+  border-radius: var(--clay-border-radius-full);
+  box-shadow: var(--clay-shadow-inner);
+  overflow: hidden;
+}
+
+.clay-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--clay-primary), var(--clay-cta));
+  border-radius: var(--clay-border-radius-full);
+  transition: width var(--clay-transition-slow);
+  box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+}
+
+/* Clay 工具提示 */
+.clay-tooltip {
+  position: relative;
+}
+
+.clay-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  padding: 8px 16px;
+  font-family: var(--clay-font-primary);
+  font-size: 0.875rem;
+  color: white;
+  background: var(--clay-primary);
+  border: 2px solid var(--clay-primary-dark);
+  border-radius: var(--clay-border-radius-sm);
+  box-shadow: var(--clay-shadow-outer);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--clay-transition-fast);
+  z-index: var(--clay-z-tooltip);
+}
+
+.clay-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ========================================
+   Claymorphism 动画
+   ======================================== */
+
+@keyframes clay-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes clay-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: var(--clay-shadow-combined);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: var(--clay-shadow-hover);
+  }
+}
+
+@keyframes clay-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes clay-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.clay-animate-bounce {
+  animation: clay-bounce 1s ease-in-out infinite;
+}
+
+.clay-animate-pulse {
+  animation: clay-pulse 2s ease-in-out infinite;
+}
+
+.clay-animate-shake {
+  animation: clay-shake 0.5s ease-in-out;
+}
+
+.clay-animate-float {
+  animation: clay-float 3s ease-in-out infinite;
+}
+
+/* ========================================
+   Claymorphism 响应式工具类
+   ======================================== */
+
+/* 响应式隐藏 */
+@media (max-width: 768px) {
+  .clay-hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .clay-hide-desktop {
+    display: none !important;
+  }
+}
+
+/* 响应式间距 */
+.clay-p-responsive {
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .clay-p-responsive {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .clay-p-responsive {
+    padding: 32px;
+  }
+}
+
+/* ========================================
+   Claymorphism 无障碍优化
+   ======================================== */
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .clay-loader {
+    animation: none;
+    border-top-color: var(--clay-primary);
+    opacity: 0.6;
+  }
+}
+
+/* 焦点样式 */
+.clay-focus-visible:focus-visible {
+  outline: 3px solid var(--clay-secondary-light);
+  outline-offset: 3px;
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+  .clay-card,
+  .clay-btn,
+  .clay-input,
+  .clay-select {
+    border-width: 4px;
+  }
+}

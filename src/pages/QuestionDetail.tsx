@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { allQuestions } from '../data';
 import { CATEGORIES, DIFFICULTY_LABELS } from '../types/question';
 import { useUserStore } from '../stores/useUserStore';
+import { useNoteStore } from '../stores/useNoteStore';
+import { useReviewStore } from '../stores/useReviewStore';
+import { useFavoriteStore } from '../stores/useFavoriteStore';
 import { AnswerPanel } from '../components/AnswerPanel';
 import { CodeRunner } from '../components/CodeRunner';
 import { ScorePanel } from '../components/ScorePanel';
+import { NoteEditor, NotePreview } from '../components/notes';
+import { FolderSelector } from '../components/FavoriteManager';
+import { StudyTimer, TimerBadge } from '../components/StudyTimer';
 import './QuestionDetail.css';
 
 /**
@@ -24,14 +30,45 @@ export const QuestionDetail: React.FC = () => {
     updateProgress,
     isWrongQuestion,
     addToWrongQuestions,
-    removeFromWrongQuestions
+    removeFromWrongQuestions,
+    recordVisit
   } = useUserStore();
+
+  const { 
+    getNoteByQuestion, 
+    deleteNote 
+  } = useNoteStore();
+
+  const { 
+    addToReviewQueue,
+    markAsReviewed 
+  } = useReviewStore();
+
+  const {
+    loadFolders,
+    loadFavorites
+  } = useFavoriteStore();
 
   const [showAnswer, setShowAnswer] = useState(false);
   const [userAnswer, setUserAnswer] = useState('');
   const [codeScore, setCodeScore] = useState<any>();
   const [showScorePanel, setShowScorePanel] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [showNoteEditor, setShowNoteEditor] = useState(false);
+  const [showFolderSelector, setShowFolderSelector] = useState(false);
+
+  // 初始化
+  useEffect(() => {
+    loadFolders();
+    loadFavorites();
+  }, [loadFolders, loadFavorites]);
+
+  // 记录访问
+  useEffect(() => {
+    if (id) {
+      recordVisit(id);
+    }
+  }, [id, recordVisit]);
 
   // 如果题目不存在
   if (!question) {
@@ -55,6 +92,7 @@ export const QuestionDetail: React.FC = () => {
   const favorite = isFavorite(question.id);
   const progress = getProgress(question.id);
   const isWrong = isWrongQuestion(question.id);
+  const note = getNoteByQuestion(question.id);
 
   const handleScoreCalculated = (score: any) => {
     setCodeScore(score);
@@ -69,6 +107,16 @@ export const QuestionDetail: React.FC = () => {
 
   const handleProgressChange = (status: 'not_started' | 'learning' | 'mastered') => {
     updateProgress(question.id, status);
+    
+    // 如果标记为学习中，添加到复习队列
+    if (status === 'learning') {
+      addToReviewQueue(question.id);
+    }
+    
+    // 如果标记为已掌握，从复习队列移除
+    if (status === 'mastered') {
+      markAsReviewed(question.id);
+    }
   };
 
   // 分享功能
@@ -76,7 +124,6 @@ export const QuestionDetail: React.FC = () => {
     const shareUrl = `${window.location.origin}/questions/${question.id}`;
     const shareText = `前端面试题：${question.title}`;
     
-    // 尝试使用 Web Share API
     if (navigator.share) {
       try {
         await navigator.share({
@@ -84,16 +131,14 @@ export const QuestionDetail: React.FC = () => {
           url: shareUrl,
         });
       } catch (err) {
-        // 用户取消分享，不做处理
+        // 用户取消分享
       }
     } else {
-      // 回退到复制链接
       try {
         await navigator.clipboard.writeText(shareUrl);
         setShareCopied(true);
         setTimeout(() => setShareCopied(false), 2000);
       } catch (err) {
-        // 复制失败，显示链接
         prompt('复制链接:', shareUrl);
       }
     }
@@ -132,19 +177,45 @@ export const QuestionDetail: React.FC = () => {
           </div>
 
           <div className="header-actions">
-            {/* 学习进度 */}
-            <div className="progress-selector">
-              <label>学习状态：</label>
-              <select 
-                value={progress}
-                onChange={(e) => handleProgressChange(e.target.value as any)}
-                className="progress-select"
-              >
-                <option value="not_started">未开始</option>
-                <option value="learning">学习中</option>
-                <option value="mastered">已掌握</option>
-              </select>
-            </div>
+            {/* 学习状态徽章 */}
+            <button
+              className={`header-status-badge ${progress}`}
+              onClick={() => {
+                const nextStatus = progress === 'not_started' ? 'learning' : progress === 'learning' ? 'mastered' : 'not_started';
+                handleProgressChange(nextStatus);
+              }}
+              title="点击切换状态"
+            >
+              {progress === 'not_started' && (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                  </svg>
+                  <span>未开始</span>
+                </>
+              )}
+              {progress === 'learning' && (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                  </svg>
+                  <span>学习中</span>
+                </>
+              )}
+              {progress === 'mastered' && (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  </svg>
+                  <span>已掌握</span>
+                </>
+              )}
+            </button>
+
+            {/* 学习计时器 */}
+            <TimerBadge questionId={question.id} />
 
             {/* 收藏按钮 */}
             <button
@@ -154,6 +225,24 @@ export const QuestionDetail: React.FC = () => {
             >
               {favorite ? '★' : '☆'}
             </button>
+
+            {/* 收藏夹选择器 */}
+            <div className="folder-selector-wrapper">
+              <button
+                className="folder-btn"
+                onClick={() => setShowFolderSelector(!showFolderSelector)}
+              >
+                📁
+              </button>
+              {showFolderSelector && (
+                <FolderSelector 
+                  questionId={question.id}
+                  onToggle={() => {
+                    loadFavorites();
+                  }}
+                />
+              )}
+            </div>
 
             {/* 错题本按钮 */}
             <button
@@ -186,6 +275,11 @@ export const QuestionDetail: React.FC = () => {
             </span>
           ))}
         </div>
+      </div>
+
+      {/* 学习计时器 */}
+      <div className="timer-section">
+        <StudyTimer questionId={question.id} compact />
       </div>
 
       {/* 题目内容 */}
@@ -309,6 +403,47 @@ export const QuestionDetail: React.FC = () => {
             )}
           </>
         )}
+
+        {/* 笔记区域 */}
+        <div className="note-section">
+          <div className="note-section-header">
+            <h3>📝 学习笔记</h3>
+            {!showNoteEditor && !note && (
+              <button 
+                className="add-note-btn"
+                onClick={() => setShowNoteEditor(true)}
+              >
+                + 添加笔记
+              </button>
+            )}
+          </div>
+
+          {showNoteEditor ? (
+            <NoteEditor
+              questionId={question.id}
+              onSave={() => {
+                setShowNoteEditor(false);
+              }}
+              onCancel={() => setShowNoteEditor(false)}
+            />
+          ) : note ? (
+            <div className="note-container">
+              <NotePreview
+                note={note}
+                onEdit={() => setShowNoteEditor(true)}
+                onDelete={async () => {
+                  if (confirm('确定要删除这条笔记吗？')) {
+                    await deleteNote(note.id);
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="note-placeholder">
+              <p>还没有笔记，点击上方按钮添加学习笔记</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 返回按钮 */}

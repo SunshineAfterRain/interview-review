@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import { Question, DIFFICULTY_LABELS, CATEGORIES, ScoreResult } from '../types/question';
 import { AnswerPanel } from './AnswerPanel';
@@ -59,30 +58,32 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   return (
     <div className="question-card">
       <div className="question-header" onClick={onToggle}>
-        <div className="question-meta">
-          <span 
-            className="question-category"
-            style={{ backgroundColor: category?.color }}
-          >
-            {category?.icon} {category?.label}
-          </span>
-          <span 
-            className="question-difficulty"
-            style={{ color: difficulty.color }}
-          >
-            {difficulty.label}
-          </span>
-          {isCodingQuestion && (
-            <span className="question-type-badge coding">
-              编程题
+        <div className="question-header-top">
+          <div className="question-meta">
+            <span 
+              className="question-category"
+              style={{ backgroundColor: category?.color }}
+            >
+              {category?.icon} {category?.label}
             </span>
-          )}
-          {/* 学习进度标记 */}
-          <span className={`progress-badge ${progress}`}>
-            {progress === 'not_started' && '○ 未开始'}
-            {progress === 'learning' && '◐ 学习中'}
-            {progress === 'mastered' && '● 已掌握'}
-          </span>
+            <span 
+              className="question-difficulty"
+              style={{ color: difficulty.color }}
+            >
+              {difficulty.label}
+            </span>
+            {isCodingQuestion && (
+              <span className="question-type-badge coding">
+                编程题
+              </span>
+            )}
+          </div>
+          
+          <div className="header-actions">
+            <button className="expand-btn">
+              {isExpanded ? '▼' : '▶'}
+            </button>
+          </div>
         </div>
         
         <h3 className="question-title">{question.title}</h3>
@@ -94,56 +95,61 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             </span>
           ))}
         </div>
-        
-        <div className="header-actions">
-          {/* 收藏按钮 */}
+
+        {/* 底部状态栏 */}
+        <div className="question-status-bar">
           <button
-            className={`favorite-btn ${favorite ? 'active' : ''}`}
-            onClick={handleFavoriteClick}
-            aria-label={favorite ? '取消收藏' : '收藏'}
-            title={favorite ? '取消收藏' : '收藏'}
+            className={`status-badge ${progress === 'not_started' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleProgressChange('not_started');
+            }}
           >
-            {favorite ? '★' : '☆'}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+            <span>未开始</span>
           </button>
-          
-          <button className="expand-btn">
-            {isExpanded ? '▼' : '▶'}
+          <button
+            className={`status-badge ${progress === 'learning' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleProgressChange('learning');
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            <span>学习中</span>
+          </button>
+          <button
+            className={`status-badge ${progress === 'mastered' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleProgressChange('mastered');
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>已掌握</span>
+          </button>
+          <button
+            className={`favorite-action ${favorite ? 'active' : ''}`}
+            onClick={handleFavoriteClick}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={favorite ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span>{favorite ? '已收藏' : '收藏'}</span>
           </button>
         </div>
       </div>
       
       {isExpanded && (
         <div className="question-content">
-          {/* 进度更新按钮 */}
-          <div className="progress-actions">
-            <span className="progress-label">更新学习状态：</span>
-            <button
-              className={`progress-btn ${progress === 'not_started' ? 'active' : ''}`}
-              onClick={() => handleProgressChange('not_started')}
-            >
-              ○ 未开始
-            </button>
-            <button
-              className={`progress-btn ${progress === 'learning' ? 'active' : ''}`}
-              onClick={() => handleProgressChange('learning')}
-            >
-              ◐ 学习中
-            </button>
-            <button
-              className={`progress-btn ${progress === 'mastered' ? 'active' : ''}`}
-              onClick={() => handleProgressChange('mastered')}
-            >
-              ● 已掌握
-            </button>
-            <Link 
-              to={`/questions/${question.id}`} 
-              className="detail-link"
-              onClick={(e) => e.stopPropagation()}
-            >
-              查看详情 →
-            </Link>
-          </div>
-
           <div className="question-section">
             <h4>题目：</h4>
             <p>{question.question}</p>

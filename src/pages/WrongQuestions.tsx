@@ -56,15 +56,6 @@ export const WrongQuestions: React.FC = () => {
     return labels[category] || category;
   };
 
-  const getDifficultyLabel = (difficulty: string) => {
-    const labels: Record<string, { label: string; color: string }> = {
-      easy: { label: '简单', color: '#2ecc71' },
-      medium: { label: '中等', color: '#f39c12' },
-      hard: { label: '困难', color: '#e74c3c' },
-    };
-    return labels[difficulty] || { label: difficulty, color: '#95a5a6' };
-  };
-
   if (wrongQuestionsList.length === 0) {
     return (
       <div className="wrong-questions-page">

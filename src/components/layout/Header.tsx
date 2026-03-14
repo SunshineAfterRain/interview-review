@@ -22,6 +22,8 @@ export const Header: React.FC = () => {
   // 导航菜单项
   const navItems = [
     { path: '/', label: '首页', icon: '📚' },
+    { path: '/interview', label: '模拟面试', icon: '🎯' },
+    { path: '/plan', label: '学习计划', icon: '📅' },
     { path: '/favorites', label: '收藏夹', icon: '⭐', badge: favorites.length },
     { path: '/wrong-questions', label: '错题本', icon: '📝', badge: wrongQuestions.length },
     { path: '/progress', label: '学习进度', icon: '📊' },

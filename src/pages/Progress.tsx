@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useUserStore } from '../stores/useUserStore';
 import { allQuestions } from '../data';
-import { CATEGORIES, Category, DIFFICULTY_LABELS } from '../types/question';
+import { CATEGORIES, Category, DIFFICULTY_LABELS, Difficulty } from '../types/question';
 import './Progress.css';
 
 /**
@@ -348,7 +348,7 @@ export const Progress: React.FC = () => {
         
         <div className="difficulty-progress-list">
           {Object.entries(difficultyStats).map(([key, value]) => {
-            const label = DIFFICULTY_LABELS[key];
+            const label = DIFFICULTY_LABELS[key as Difficulty];
             const percentage = value.total > 0 
               ? Math.round((value.mastered / value.total) * 100) 
               : 0;
