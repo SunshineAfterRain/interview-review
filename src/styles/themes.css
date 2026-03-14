@@ -301,8 +301,16 @@
   --content-max-width: 800px;
 
   /* 额外的 Clay 变量 */
+  --clay-surface: var(--bg-surface);
   --clay-surface-secondary: var(--bg-elevated);
   --clay-shadow-inset: var(--shadow-inner);
+  
+  /* Clay 间距变量 */
+  --clay-space-xs: var(--space-1);
+  --clay-space-sm: var(--space-2);
+  --clay-space-md: var(--space-4);
+  --clay-space-lg: var(--space-6);
+  --clay-space-xl: var(--space-8);
 }
 
 /* ========================================
@@ -445,6 +453,18 @@
   --clay-text-muted: var(--text-muted);
   --clay-border: rgba(0, 0, 0, 0.08);
   --clay-border-light: rgba(0, 0, 0, 0.05);
+  
+  /* Clay 额外变量 */
+  --clay-surface: var(--bg-surface);
+  --clay-surface-secondary: var(--bg-elevated);
+  --clay-shadow-inset: var(--shadow-inner);
+  
+  /* Clay 间距变量 */
+  --clay-space-xs: var(--space-1);
+  --clay-space-sm: var(--space-2);
+  --clay-space-md: var(--space-4);
+  --clay-space-lg: var(--space-6);
+  --clay-space-xl: var(--space-8);
 }
 
 /* ========================================
