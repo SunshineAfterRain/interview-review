@@ -38,18 +38,18 @@ export const DeepCloneDemo: React.FC = () => {
       
       <div className="demo-content">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div style={{ padding: '1rem', background: 'rgba(0, 245, 255, 0.1)', borderRadius: '8px', border: '1px solid #00f5ff' }}>
-            <div style={{ color: '#00f5ff', fontWeight: 'bold', marginBottom: '0.5rem' }}>原始对象</div>
-            <pre style={{ fontSize: '0.85rem', color: '#e0e0e0', margin: 0, whiteSpace: 'pre-wrap' }}>
+          <div style={{ padding: '1rem', background: 'rgba(79, 70, 229, 0.15)', borderRadius: '8px', border: '1px solid rgba(79, 70, 229, 0.4)' }}>
+            <div style={{ color: '#818CF8', fontWeight: 'bold', marginBottom: '0.5rem' }}>原始对象</div>
+            <pre style={{ fontSize: '0.85rem', color: '#E0E7FF', margin: 0, whiteSpace: 'pre-wrap' }}>
               {JSON.stringify(originalObject, null, 2)}
             </pre>
           </div>
           
-          <div style={{ padding: '1rem', background: modified ? 'rgba(255, 0, 255, 0.1)' : 'rgba(0, 255, 136, 0.1)', borderRadius: '8px', border: modified ? '1px solid #ff00ff' : '1px solid #00ff88' }}>
-            <div style={{ color: modified ? '#ff00ff' : '#00ff88', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+          <div style={{ padding: '1rem', background: modified ? 'rgba(236, 72, 153, 0.15)' : 'rgba(34, 197, 94, 0.15)', borderRadius: '8px', border: modified ? '1px solid rgba(236, 72, 153, 0.4)' : '1px solid rgba(34, 197, 94, 0.4)' }}>
+            <div style={{ color: modified ? '#F472B6' : '#4ADE80', fontWeight: 'bold', marginBottom: '0.5rem' }}>
               {modified ? '修改后的克隆对象' : '克隆对象'}
             </div>
-            <pre style={{ fontSize: '0.85rem', color: '#e0e0e0', margin: 0, whiteSpace: 'pre-wrap' }}>
+            <pre style={{ fontSize: '0.85rem', color: '#E0E7FF', margin: 0, whiteSpace: 'pre-wrap' }}>
               {clonedObject ? JSON.stringify(clonedObject, null, 2) : '(未克隆)'}
             </pre>
           </div>
@@ -60,10 +60,10 @@ export const DeepCloneDemo: React.FC = () => {
             onClick={handleDeepClone}
             style={{
               padding: '0.75rem 1.5rem',
-              background: 'linear-gradient(135deg, #00ff88, #00cc6a)',
+              background: 'linear-gradient(135deg, #4ADE80, #22C55E)',
               border: 'none',
               borderRadius: '8px',
-              color: '#000',
+              color: '#fff',
               fontWeight: 'bold',
               cursor: 'pointer',
               fontFamily: 'Consolas, Monaco, monospace',
@@ -77,10 +77,10 @@ export const DeepCloneDemo: React.FC = () => {
             disabled={!clonedObject}
             style={{
               padding: '0.75rem 1.5rem',
-              background: clonedObject ? 'linear-gradient(135deg, #ff00ff, #cc00cc)' : '#333',
+              background: clonedObject ? 'linear-gradient(135deg, #F472B6, #EC4899)' : '#374151',
               border: 'none',
               borderRadius: '8px',
-              color: clonedObject ? '#fff' : '#666',
+              color: clonedObject ? '#fff' : '#9CA3AF',
               fontWeight: 'bold',
               cursor: clonedObject ? 'pointer' : 'not-allowed',
               fontFamily: 'Consolas, Monaco, monospace',
