@@ -176,7 +176,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
                   {getTestCases().slice(0, 2).map((tc, index) => (
                     <div key={index} className="test-case-item">
                       <span className="test-input">输入: {JSON.stringify(tc.input)}</span>
-                      <span className="test-output">预期: {JSON.stringify(tc.expected)}</span>
+                      <span className="test-output">预期: {JSON.stringify(tc.expectedOutput)}</span>
                     </div>
                   ))}
                   {getTestCases().length > 2 && (

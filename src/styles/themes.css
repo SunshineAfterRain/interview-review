@@ -425,6 +425,21 @@
   /* Claymorphism 亮色主题背景 */
   --clay-bg-card: rgba(255, 255, 255, 0.95);
   --clay-bg-secondary: rgba(248, 248, 250, 0.9);
+  
+  /* Claymorphism 亮色主题颜色 */
+  --clay-primary: var(--color-primary-600);
+  --clay-primary-light: var(--color-primary-500);
+  --clay-primary-dark: var(--color-primary-700);
+  --clay-secondary: var(--color-primary-400);
+  --clay-secondary-light: var(--color-primary-300);
+  --clay-success: #059669;
+  --clay-warning: #D97706;
+  --clay-error: #DC2626;
+  --clay-text-primary: var(--text-primary);
+  --clay-text-secondary: var(--text-secondary);
+  --clay-text-muted: var(--text-muted);
+  --clay-border: rgba(0, 0, 0, 0.08);
+  --clay-border-light: rgba(0, 0, 0, 0.05);
 }
 
 /* ========================================
