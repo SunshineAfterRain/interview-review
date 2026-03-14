@@ -726,6 +726,130 @@
   justify-content: flex-end;
 }
 
+/* ========================================
+   答案结果区域
+   ======================================== */
+
+.answer-result {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  background: var(--clay-bg-secondary);
+  border-radius: var(--clay-border-radius-lg);
+  border: 1px solid var(--clay-border);
+}
+
+.user-answer-section {
+  margin-bottom: var(--space-6);
+}
+
+.user-answer-section h3 {
+  color: var(--clay-primary);
+  font-family: var(--clay-font-display);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-3);
+}
+
+.user-answer-content {
+  background: var(--clay-bg-card);
+  padding: var(--space-4);
+  border-radius: var(--clay-border-radius-md);
+  border: 1px solid var(--clay-border);
+}
+.user-answer-content pre {
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--clay-bg-secondary);
+  border-radius: var(--clay-border-radius-md);
+  font-family: var(--clay-font-mono);
+  font-size: 0.9rem;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.show-reference-btn {
+  margin: var(--space-4) 0;
+}
+
+.reference-answer-section {
+  margin-top: var(--space-6);
+}
+.reference-answer-section h3 {
+  color: var(--clay-success);
+  font-family: var(--clay-font-display);
+  font-size: 1.1rem;
+    margin-bottom: var(--space-4);
+}
+.reference-answer-content {
+  background: var(--clay-bg-card);
+  padding: var(--space-4);
+    border-radius: var(--clay-border-radius-md);
+    border: 1px solid var(--clay-border);
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+.reference-answer-content code {
+    display: block;
+    padding: var(--space-4);
+    background: var(--clay-bg-secondary);
+    border-radius: var(--clay-border-radius-md);
+    font-family: var(--clay-font-mono);
+    font-size: 0.85rem;
+    overflow-x: auto;
+}
+.reference-answer-content pre {
+    margin: 0;
+}
+.reference-answer-content p {
+    margin: var(--space-2) 0;
+    line-height: 1.8;
+}
+.reference-answer-content ul {
+    margin: var(--space-2) 0;
+    padding-left: var(--space-4);
+}
+.reference-answer-content li {
+    margin-bottom: var(--space-2);
+    padding-left: var(--space-3);
+    background: var(--clay-surface-secondary);
+    border-radius: var(--clay-border-radius-sm);
+    font-size: 0.85rem;
+}
+.reference-answer-content h4 {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-2);
+    color: var(--clay-text-primary);
+    font-family: var(--clay-font-display);
+}
+.reference-answer-content .code-example {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    background: var(--clay-bg-secondary);
+    border-radius: var(--clay-border-radius-md);
+    border: 1px solid var(--clay-border);
+}
+.reference-answer-content .code-example p {
+    margin-bottom: var(--space-2);
+    color: var(--clay-text-secondary);
+}
+.reference-answer-content .code-example pre {
+    margin: 0;
+    padding: var(--space-3);
+    background: var(--clay-bg-code);
+    border-radius: var(--clay-border-radius-md);
+    font-family: var(--clay-font-mono);
+    font-size: 0.85rem;
+    overflow-x: auto;
+}
+
+.reference-answer-content .code-example code {
+    display: block;
+    padding: var(--space-3);
+    background: var(--clay-bg-code);
+    border-radius: var(--clay-border-radius-md);
+    font-family: var(--clay-font-mono);
+    font-size: 0.85rem;
+}
+
 /* 报告阶段 */
 .report-phase {
   animation: fade-in 0.3s ease;

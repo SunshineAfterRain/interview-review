@@ -29,9 +29,22 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   const [answer, setAnswer] = useState('');
   const [remainingTime, setRemainingTime] = useState(timeLimit * 60); // 转换为秒
   const [isTimeWarning, setIsTimeWarning] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showReference, setShowReference] = useState(false);
+  
+  // 重置状态当题目变化时
+  useEffect(() => {
+    setAnswer('');
+    setIsSubmitted(false);
+    setShowReference(false);
+    setRemainingTime(timeLimit * 60);
+    setIsTimeWarning(false);
+  }, [question.id, timeLimit]);
   
   // 计时器
   useEffect(() => {
+    if (isSubmitted) return; // 提交后停止计时
+    
     const timer = setInterval(() => {
       setRemainingTime(prev => {
         if (prev <= 1) {
@@ -45,7 +58,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
     }, 1000);
     
     return () => clearInterval(timer);
-  }, [timeLimit, onSkip]);
+  }, [timeLimit, onSkip, isSubmitted]);
   
   // 时间警告
   useEffect(() => {
@@ -65,7 +78,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   const handleSubmit = () => {
     if (answer.trim()) {
       onSubmit(answer.trim());
-      setAnswer('');
+      setIsSubmitted(true);
     }
   };
   
@@ -83,6 +96,22 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
   
   // 获取难度信息
   const difficultyInfo = DIFFICULTY_LABELS[question.difficulty];
+  
+  // 获取编程题的起始代码
+  const getStarterCode = () => {
+    if (question.questionType === 'coding' && question.codingConfig) {
+      return question.codingConfig.starterCode || '';
+    }
+    return '';
+  };
+  
+  // 获取测试用例
+  const getTestCases = () => {
+    if (question.questionType === 'coding' && question.codingConfig) {
+      return question.codingConfig.testCases || [];
+    }
+    return [];
+  };
   
   return (
     <div className="interview-question">
@@ -132,62 +161,137 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
       <div className="interview-question-content">
         <div className="content-text">{question.question}</div>
         
-        {/* 代码示例 */}
-        {question.codeExamples && question.codeExamples.length > 0 && (
-          <div className="code-examples">
-            {question.codeExamples.map((example, index) => (
-              <div key={index} className="code-example">
-                {example.description && (
-                  <p className="example-description">{example.description}</p>
-                )}
-                <pre className="code-block">
-                  <code>{example.code}</code>
-                </pre>
+        {/* 编程题显示起始代码和测试用例 */}
+        {question.questionType === 'coding' && !isSubmitted && (
+          <div className="coding-starter">
+            <h4>📝 起始代码</h4>
+            <pre className="code-block starter-code">
+              <code>{getStarterCode()}</code>
+            </pre>
+            
+            {getTestCases().length > 0 && (
+              <div className="test-cases">
+                <h4>🧪 测试用例</h4>
+                <div className="test-case-list">
+                  {getTestCases().slice(0, 2).map((tc, index) => (
+                    <div key={index} className="test-case-item">
+                      <span className="test-input">输入: {JSON.stringify(tc.input)}</span>
+                      <span className="test-output">预期: {JSON.stringify(tc.expected)}</span>
+                    </div>
+                  ))}
+                  {getTestCases().length > 2 && (
+                    <p className="test-more">... 还有 {getTestCases().length - 2} 个测试用例</p>
+                  )}
+                </div>
               </div>
-            ))}
+            )}
+          </div>
+        )}
+        
+        {/* 理论题只显示部分代码示例（不显示完整答案） */}
+        {question.questionType === 'theory' && question.codeExamples && question.codeExamples.length > 0 && !isSubmitted && (
+          <div className="code-examples-hint">
+            <p className="hint-text">💡 本题包含代码示例，提交答案后可查看参考答案</p>
           </div>
         )}
       </div>
       
-      {/* 答案输入区 */}
-      <div className="answer-section">
-        <h3>你的答案</h3>
-        {question.questionType === 'coding' ? (
-          <textarea
-            className="answer-textarea code-input"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="请在此编写代码..."
-            spellCheck={false}
-          />
-        ) : (
-          <textarea
-            className="answer-textarea"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="请在此输入你的答案..."
-            rows={8}
-          />
-        )}
-      </div>
+      {/* 答案输入区 - 未提交时显示 */}
+      {!isSubmitted && (
+        <div className="answer-section">
+          <h3>你的答案</h3>
+          {question.questionType === 'coding' ? (
+            <textarea
+              className="answer-textarea code-input"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="请在此编写代码..."
+              spellCheck={false}
+            />
+          ) : (
+            <textarea
+              className="answer-textarea"
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="请在此输入你的答案..."
+              rows={8}
+            />
+          )}
+        </div>
+      )}
+      
+      {/* 提交后显示用户答案和参考答案 */}
+      {isSubmitted && (
+        <div className="answer-result">
+          <div className="user-answer-section">
+            <h3>✅ 你的答案</h3>
+            <div className="user-answer-content">
+              <pre>{answer}</pre>
+            </div>
+          </div>
+          
+          {/* 查看参考答案按钮 */}
+          {!showReference && (
+            <button 
+              className="btn btn-secondary show-reference-btn"
+              onClick={() => setShowReference(true)}
+            >
+              📖 查看参考答案
+            </button>
+          )}
+          
+          {/* 参考答案 */}
+          {showReference && (
+            <div className="reference-answer-section">
+              <h3>📚 参考答案</h3>
+              <div className="reference-answer-content" dangerouslySetInnerHTML={{ __html: question.answer.replace(/\n/g, '<br/>') }} />
+              
+              {/* 代码示例 */}
+              {question.codeExamples && question.codeExamples.length > 0 && (
+                <div className="code-examples">
+                  <h4>代码示例</h4>
+                  {question.codeExamples.map((example, index) => (
+                    <div key={index} className="code-example">
+                      {example.description && (
+                        <p className="example-description">{example.description}</p>
+                      )}
+                      <pre className="code-block">
+                        <code>{example.code}</code>
+                      </pre>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       
       {/* 操作按钮 */}
       <div className="interview-question-actions">
-        {canGoPrevious && onPrevious && (
-          <button className="btn btn-secondary" onClick={onPrevious}>
-            上一题
+        {!isSubmitted ? (
+          <>
+            {canGoPrevious && onPrevious && (
+              <button className="btn btn-secondary" onClick={onPrevious}>
+                上一题
+              </button>
+            )}
+            <button className="btn btn-skip" onClick={handleSkip}>
+              跳过
+            </button>
+            <button 
+              className="btn btn-primary" 
+              onClick={handleSubmit}
+              disabled={!answer.trim()}
+            >
+              提交答案
+            </button>
+          </>
+        ) : (
+          <button className="btn btn-primary next-btn" onClick={handleSkip}>
+            下一题 →
           </button>
         )}
-        <button className="btn btn-skip" onClick={handleSkip}>
-          跳过
-        </button>
-        <button 
-          className="btn btn-primary" 
-          onClick={handleSubmit}
-          disabled={!answer.trim()}
-        >
-          提交答案
-        </button>
       </div>
     </div>
   );
