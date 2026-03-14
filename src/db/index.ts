@@ -132,6 +132,14 @@ export interface SettingRecord {
   updatedAt: string;
 }
 
+/** 答案记录 */
+export interface AnswerRecord {
+  questionId: string;
+  answer: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /** 数据库 Schema */
 interface InterviewReviewDB extends DBSchema {
   progress: {
@@ -177,12 +185,16 @@ interface InterviewReviewDB extends DBSchema {
     key: string;
     value: SettingRecord;
   };
+  answers: {
+    key: string;
+    value: AnswerRecord;
+  };
 }
 
 // ==================== 数据库配置 ====================
 
 const DB_NAME = 'interview-review-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // ==================== 数据库初始化 ====================
 
@@ -249,6 +261,14 @@ export async function initDB(): Promise<IDBPDatabase<InterviewReviewDB>> {
           db.createObjectStore('settings', { keyPath: 'key' });
         }
       }
+
+      // 版本 2: 添加答案存储
+      if (oldVersion < 2) {
+        // 答案存储
+        if (!db.objectStoreNames.contains('answers')) {
+          db.createObjectStore('answers', { keyPath: 'questionId' });
+        }
+      }
     },
   });
 }
@@ -301,7 +321,7 @@ export async function deleteDB(): Promise<void> {
 export async function clearAllData(): Promise<void> {
   const db = await getDB();
   const tx = db.transaction(
-    ['progress', 'notes', 'folders', 'favorites', 'interviews', 'plans', 'achievements', 'reviews', 'settings'],
+    ['progress', 'notes', 'folders', 'favorites', 'interviews', 'plans', 'achievements', 'reviews', 'settings', 'answers'],
     'readwrite'
   );
 
@@ -315,6 +335,7 @@ export async function clearAllData(): Promise<void> {
     tx.objectStore('achievements').clear(),
     tx.objectStore('reviews').clear(),
     tx.objectStore('settings').clear(),
+    tx.objectStore('answers').clear(),
   ]);
 
   await tx.done;
@@ -333,6 +354,7 @@ export async function getDBStats(): Promise<{
   achievements: number;
   reviews: number;
   settings: number;
+  answers: number;
 }> {
   const db = await getDB();
 
@@ -346,6 +368,7 @@ export async function getDBStats(): Promise<{
     achievements,
     reviews,
     settings,
+    answers,
   ] = await Promise.all([
     db.count('progress'),
     db.count('notes'),
@@ -356,6 +379,7 @@ export async function getDBStats(): Promise<{
     db.count('achievements'),
     db.count('reviews'),
     db.count('settings'),
+    db.count('answers'),
   ]);
 
   return {
@@ -368,5 +392,6 @@ export async function getDBStats(): Promise<{
     achievements,
     reviews,
     settings,
+    answers,
   };
 }

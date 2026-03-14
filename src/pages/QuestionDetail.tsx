@@ -7,6 +7,7 @@ import { useUserStore } from '../stores/useUserStore';
 import { useNoteStore } from '../stores/useNoteStore';
 import { useReviewStore } from '../stores/useReviewStore';
 import { useFavoriteStore } from '../stores/useFavoriteStore';
+import { useAnswerStore, debouncedSaveAnswer, flushSaveAnswer } from '../stores/useAnswerStore';
 import { AnswerPanel } from '../components/AnswerPanel';
 import { CodeRunner } from '../components/CodeRunner';
 import { ScorePanel } from '../components/ScorePanel';
@@ -49,6 +50,13 @@ export const QuestionDetail: React.FC = () => {
     loadFavorites
   } = useFavoriteStore();
 
+  const {
+    getAnswer,
+    saveAnswer,
+    getSaveStatus,
+    loadAnswers
+  } = useAnswerStore();
+
   const [showAnswer, setShowAnswer] = useState(false);
   const [userAnswer, setUserAnswer] = useState('');
   const [codeScore, setCodeScore] = useState<any>();
@@ -61,7 +69,18 @@ export const QuestionDetail: React.FC = () => {
   useEffect(() => {
     loadFolders();
     loadFavorites();
-  }, [loadFolders, loadFavorites]);
+    loadAnswers();
+  }, [loadFolders, loadFavorites, loadAnswers]);
+
+  // 加载已保存的答案
+  useEffect(() => {
+    if (id) {
+      const savedAnswer = getAnswer(id);
+      if (savedAnswer) {
+        setUserAnswer(savedAnswer);
+      }
+    }
+  }, [id, getAnswer]);
 
   // 记录访问
   useEffect(() => {
@@ -93,6 +112,7 @@ export const QuestionDetail: React.FC = () => {
   const progress = getProgress(question.id);
   const isWrong = isWrongQuestion(question.id);
   const note = getNoteByQuestion(question.id);
+  const saveStatus = id ? getSaveStatus(id) : 'idle';
 
   const handleScoreCalculated = (score: any) => {
     setCodeScore(score);
@@ -101,7 +121,22 @@ export const QuestionDetail: React.FC = () => {
 
   const handleTheorySubmit = () => {
     if (userAnswer.trim()) {
+      // 提交前立即保存答案
+      if (id) {
+        flushSaveAnswer(id);
+        saveAnswer(id, userAnswer);
+      }
       setShowScorePanel(true);
+    }
+  };
+
+  const handleAnswerChange = (value: string | undefined) => {
+    const newAnswer = value || '';
+    setUserAnswer(newAnswer);
+    
+    // 自动保存（防抖 3 秒）
+    if (id && newAnswer.trim()) {
+      debouncedSaveAnswer(id, newAnswer, 3000);
     }
   };
 
@@ -347,13 +382,26 @@ export const QuestionDetail: React.FC = () => {
         {!isCodingQuestion && (
           <>
             <div className="user-answer-section">
-              <h4>你的答案：</h4>
+              <div className="answer-header">
+                <h4>你的答案：</h4>
+                <div className="save-status">
+                  {saveStatus === 'saving' && (
+                    <span className="status-saving">保存中...</span>
+                  )}
+                  {saveStatus === 'saved' && (
+                    <span className="status-saved">已保存</span>
+                  )}
+                  {saveStatus === 'error' && (
+                    <span className="status-error">保存失败</span>
+                  )}
+                </div>
+              </div>
               <div className="answer-editor-container">
                 <Editor
                   height="200px"
                   language="markdown"
                   value={userAnswer}
-                  onChange={(value) => setUserAnswer(value || '')}
+                  onChange={handleAnswerChange}
                   theme="vs-dark"
                   options={{
                     minimap: { enabled: false },
