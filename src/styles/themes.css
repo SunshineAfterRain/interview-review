@@ -238,6 +238,69 @@
   /* 导航栏高度 */
   --header-height: 64px;
   --header-height-mobile: 56px;
+
+  /* ========================================
+     Claymorphism 设计变量映射
+     兼容旧版 --clay-* 变量
+     ======================================== */
+
+  /* 主色调 */
+  --clay-primary: var(--color-primary-600);
+  --clay-primary-light: var(--color-primary-500);
+  --clay-primary-dark: var(--color-primary-700);
+  --clay-secondary: var(--color-primary-400);
+  --clay-secondary-light: var(--color-primary-300);
+  --clay-cta: #10B981;
+  --clay-warning: #F59E0B;
+  --clay-warning-light: #FBBF24;
+  --clay-error: #EF4444;
+  --clay-success: #10B981;
+
+  /* 文字颜色 */
+  --clay-text-primary: var(--text-primary);
+  --clay-text-secondary: var(--text-secondary);
+  --clay-text-muted: var(--text-muted);
+
+  /* 边框 */
+  --clay-border: 3px solid var(--border-default);
+  --clay-border-color: var(--border-default);
+  --clay-border-dark: var(--border-emphasis);
+
+  /* 圆角 */
+  --clay-border-radius-sm: var(--radius-sm);
+  --clay-border-radius-md: var(--radius-lg);
+  --clay-border-radius-lg: var(--radius-xl);
+  --clay-border-radius-xl: var(--radius-2xl);
+  --clay-border-radius-full: var(--radius-full);
+
+  /* 阴影 */
+  --clay-shadow-combined: var(--shadow-card);
+  --clay-shadow-hover: var(--shadow-card-hover);
+  --clay-shadow-active: var(--shadow-sm);
+  --clay-shadow-inner: var(--shadow-inner);
+
+  /* 过渡 */
+  --clay-transition-fast: var(--transition-fast);
+  --clay-transition-normal: var(--transition-normal);
+  --clay-transition-slow: var(--transition-slow);
+
+  /* 字体 */
+  --clay-font-primary: var(--font-sans);
+  --clay-font-display: var(--font-sans);
+
+  /* 布局 */
+  --container-max-width: var(--container-max);
+  --padding-sm: var(--space-4);
+  --padding-md: var(--space-6);
+  --padding-lg: var(--space-8);
+  --padding-xl: var(--space-10);
+  --btn-gap: var(--space-2);
+  --card-gap: var(--space-4);
+  --content-max-width: 800px;
+
+  /* 额外的 Clay 变量 */
+  --clay-surface-secondary: var(--bg-elevated);
+  --clay-shadow-inset: var(--shadow-inner);
 }
 
 /* ========================================
@@ -299,6 +362,10 @@
   --shadow-card-hover: 0 10px 40px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
   --shadow-glow-sm: 0 0 15px rgba(99, 102, 241, 0.2);
   --shadow-glow-md: 0 0 25px rgba(99, 102, 241, 0.25);
+
+  /* Claymorphism 暗色主题背景 */
+  --clay-bg-card: rgba(26, 26, 36, 0.9);
+  --clay-bg-secondary: rgba(18, 18, 28, 0.8);
 }
 
 /* ========================================
@@ -354,6 +421,10 @@
   --bg-pattern: 
     radial-gradient(ellipse at top left, rgba(99, 102, 241, 0.04) 0%, transparent 50%),
     radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+
+  /* Claymorphism 亮色主题背景 */
+  --clay-bg-card: rgba(255, 255, 255, 0.95);
+  --clay-bg-secondary: rgba(248, 248, 250, 0.9);
 }
 
 /* ========================================
