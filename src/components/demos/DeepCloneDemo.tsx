@@ -38,18 +38,18 @@ export const DeepCloneDemo: React.FC = () => {
       
       <div className="demo-content">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div style={{ padding: '1rem', background: 'rgba(79, 70, 229, 0.15)', borderRadius: '8px', border: '1px solid rgba(79, 70, 229, 0.4)' }}>
-            <div style={{ color: '#818CF8', fontWeight: 'bold', marginBottom: '0.5rem' }}>原始对象</div>
-            <pre style={{ fontSize: '0.85rem', color: '#E0E7FF', margin: 0, whiteSpace: 'pre-wrap' }}>
+          <div style={{ padding: '1rem', background: 'rgba(79, 70, 229, 0.2)', borderRadius: '8px', border: '1px solid rgba(79, 70, 229, 0.5)' }}>
+            <div style={{ color: '#A5B4FC', fontWeight: 'bold', marginBottom: '0.5rem' }}>原始对象</div>
+            <pre style={{ fontSize: '0.85rem', color: '#FFFFFF', margin: 0, whiteSpace: 'pre-wrap' }}>
               {JSON.stringify(originalObject, null, 2)}
             </pre>
           </div>
           
-          <div style={{ padding: '1rem', background: modified ? 'rgba(236, 72, 153, 0.15)' : 'rgba(34, 197, 94, 0.15)', borderRadius: '8px', border: modified ? '1px solid rgba(236, 72, 153, 0.4)' : '1px solid rgba(34, 197, 94, 0.4)' }}>
-            <div style={{ color: modified ? '#F472B6' : '#4ADE80', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+          <div style={{ padding: '1rem', background: modified ? 'rgba(236, 72, 153, 0.2)' : 'rgba(34, 197, 94, 0.2)', borderRadius: '8px', border: modified ? '1px solid rgba(236, 72, 153, 0.5)' : '1px solid rgba(34, 197, 94, 0.5)' }}>
+            <div style={{ color: modified ? '#F9A8D4' : '#86EFAC', fontWeight: 'bold', marginBottom: '0.5rem' }}>
               {modified ? '修改后的克隆对象' : '克隆对象'}
             </div>
-            <pre style={{ fontSize: '0.85rem', color: '#E0E7FF', margin: 0, whiteSpace: 'pre-wrap' }}>
+            <pre style={{ fontSize: '0.85rem', color: '#FFFFFF', margin: 0, whiteSpace: 'pre-wrap' }}>
               {clonedObject ? JSON.stringify(clonedObject, null, 2) : '(未克隆)'}
             </pre>
           </div>

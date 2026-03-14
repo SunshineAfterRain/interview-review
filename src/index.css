@@ -1918,15 +1918,15 @@ a:hover {
 /* 1440px - 大桌面 */
 @media (min-width: 1440px) {
   .questions-container {
-    max-width: 1600px;
+    padding: var(--space-8) var(--space-page, var(--space-8));
   }
   
   .app-controls {
-    max-width: 1600px;
+    padding: var(--space-4) var(--space-page, var(--space-8));
   }
   
   .category-nav {
-    max-width: 1600px;
+    padding: var(--space-4) var(--space-page, var(--space-8));
   }
 }
 
