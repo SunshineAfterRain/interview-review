@@ -243,9 +243,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                     }}
                   />
                 </div>
-                {!userAnswer.trim() && (
-                  <p className="answer-placeholder">请在此输入你的答案...</p>
-                )}
+               
                 <button
                   className="submit-answer-btn"
                   onClick={handleTheorySubmit}
