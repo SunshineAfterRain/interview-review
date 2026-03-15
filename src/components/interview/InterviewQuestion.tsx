@@ -205,7 +205,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
               className="answer-textarea code-input"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
-              placeholder="请在此编写代码..."
+              placeholder="💡 在这里编写你的代码实现...&#10;&#10;提示：注意代码规范和边界情况处理"
               spellCheck={false}
             />
           ) : (
@@ -213,7 +213,7 @@ export const InterviewQuestion: React.FC<InterviewQuestionProps> = ({
               className="answer-textarea"
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
-              placeholder="请在此输入你的答案..."
+              placeholder="💡 在这里输入你的答案...&#10;&#10;可以从以下几个方面思考：&#10;• 核心概念和原理&#10;• 实际应用场景&#10;• 注意事项和最佳实践"
               rows={8}
             />
           )}

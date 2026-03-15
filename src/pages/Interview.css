@@ -691,32 +691,61 @@
 
 .answer-textarea {
   width: 100%;
-  min-height: 200px;
-  padding: 16px;
-  background: var(--clay-bg-secondary);
-  border: 3px solid var(--clay-border);
-  border-radius: var(--clay-border-radius-md);
+  min-height: 220px;
+  padding: 20px;
+  background: var(--clay-bg-card);
+  border: 2px solid var(--clay-border);
+  border-radius: var(--clay-border-radius-lg);
   color: var(--clay-text-primary);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.7;
   resize: vertical;
   font-family: var(--clay-font-primary);
   transition: all var(--clay-transition-normal);
-  box-shadow: var(--clay-shadow-inner);
+  box-shadow: var(--clay-shadow-combined);
 }
 
 .answer-textarea.code-input {
   font-family: var(--clay-font-mono);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .answer-textarea:focus {
   outline: none;
   border-color: var(--clay-primary);
-  box-shadow: var(--clay-shadow-inner), 0 0 0 3px rgba(79, 70, 229, 0.15);
+  box-shadow: var(--clay-shadow-hover), 0 0 0 4px rgba(79, 70, 229, 0.15);
+  transform: translateY(-1px);
 }
 
 .answer-textarea::placeholder {
   color: var(--clay-text-muted);
+  font-style: normal;
+  opacity: 0.6;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.answer-textarea:hover:not(:focus) {
+  border-color: var(--clay-primary-light);
+  box-shadow: var(--clay-shadow-combined);
+}
+
+/* 答题区域标题样式 */
+.answer-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 17px;
+  color: var(--clay-text-primary);
+  font-family: var(--clay-font-display);
+  font-weight: 700;
+}
+
+.answer-section h3::before {
+  content: '✏️';
+  font-size: 18px;
 }
 
 /* 题目操作按钮 */
