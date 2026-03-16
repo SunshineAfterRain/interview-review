@@ -22,7 +22,7 @@ export const Home: React.FC = () => {
     (categoryParam as Category) || 'all'
   );
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null);
+  const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(new Set());
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -68,9 +68,9 @@ export const Home: React.FC = () => {
   useEffect(() => {
     // 检查当前页是否有答案的题目
     const questionsWithAnswers = paginatedQuestions.filter(q => getAnswer(q.id));
-    if (questionsWithAnswers.length > 0 && !expandedQuestion) {
-      // 自动展开第一个有答案的题目
-      setExpandedQuestion(questionsWithAnswers[0].id);
+    if (questionsWithAnswers.length > 0 && expandedQuestions.size === 0) {
+      // 自动展开所有有答案的题目
+      setExpandedQuestions(new Set(questionsWithAnswers.map(q => q.id)));
     }
   }, [answers, currentPage, paginatedQuestions]);
 
@@ -90,7 +90,15 @@ export const Home: React.FC = () => {
 
   // 处理题目展开/收起
   const handleQuestionToggle = (questionId: string) => {
-    setExpandedQuestion(expandedQuestion === questionId ? null : questionId);
+    setExpandedQuestions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(questionId)) {
+        newSet.delete(questionId);
+      } else {
+        newSet.add(questionId);
+      }
+      return newSet;
+    });
   };
 
   // 分页导航
@@ -200,7 +208,7 @@ export const Home: React.FC = () => {
               <QuestionCard
                 key={question.id}
                 question={question}
-                isExpanded={expandedQuestion === question.id}
+                isExpanded={expandedQuestions.has(question.id)}
                 onToggle={() => handleQuestionToggle(question.id)}
               />
             ))
