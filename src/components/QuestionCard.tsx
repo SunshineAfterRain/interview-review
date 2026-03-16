@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import { Question, DIFFICULTY_LABELS, CATEGORIES, ScoreResult } from '../types/question';
 import { AnswerPanel } from './AnswerPanel';
 import { CodeRunner } from './CodeRunner';
 import { ScorePanel } from './ScorePanel';
 import { useUserStore } from '../stores/useUserStore';
+import { useAnswerStore } from '../stores/useAnswerStore';
+
+// 防抖函数
+function debounce<T extends (...args: any[]) => any>(fn: T, delay: number): T {
+  let timer: ReturnType<typeof setTimeout>;
+  return ((...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  }) as T;
+}
 
 interface QuestionCardProps {
   question: Question;
@@ -29,11 +39,42 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     updateProgress 
   } = useUserStore();
   
+  const { 
+    getAnswer, 
+    saveAnswer, 
+    getSaveStatus
+  } = useAnswerStore();
+  
+  // 加载已保存的答案
+  useEffect(() => {
+    const savedAnswer = getAnswer(question.id);
+    if (savedAnswer) {
+      setUserAnswer(savedAnswer);
+    }
+  }, [question.id, getAnswer]);
+  
+  // 防抖保存答案
+  const debouncedSave = useCallback(
+    debounce((answer: string) => {
+      saveAnswer(question.id, answer);
+    }, 1000),
+    [question.id, saveAnswer]
+  );
+  
+  // 当答案变化时自动保存
+  const handleAnswerChange = (value: string) => {
+    setUserAnswer(value);
+    if (value.trim()) {
+      debouncedSave(value);
+    }
+  };
+  
   const category = CATEGORIES.find(c => c.key === question.category);
   const difficulty = DIFFICULTY_LABELS[question.difficulty];
   const isCodingQuestion = question.questionType === 'coding';
   const favorite = isFavorite(question.id);
   const progress = getProgress(question.id);
+  const saveStatus = getSaveStatus(question.id);
 
   const handleScoreCalculated = (score: ScoreResult) => {
     setCodeScore(score);
@@ -42,6 +83,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   const handleTheorySubmit = () => {
     if (userAnswer.trim()) {
+      // 提交前立即保存
+      saveAnswer(question.id, userAnswer);
       setShowScorePanel(true);
     }
   };
@@ -215,13 +258,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           {!isCodingQuestion && (
             <>
               <div className="user-answer-section">
-                <h4>你的答案：</h4>
+                <h4>你的答案：{saveStatus === 'saving' && <span className="save-status saving">保存中...</span>}{saveStatus === 'saved' && <span className="save-status saved">已保存</span>}</h4>
                 <div className="answer-editor-container">
                   <Editor
                     height="200px"
                     language="markdown"
                     value={userAnswer}
-                    onChange={(value) => setUserAnswer(value || '')}
+                    onChange={(value) => handleAnswerChange(value || '')}
                     theme="vs-dark"
                     loading={
                       <div className="editor-loading">

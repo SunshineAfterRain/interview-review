@@ -8,6 +8,7 @@ import { useUserStore } from './stores/useUserStore';
 import { useReviewStore } from './stores/useReviewStore';
 import { useNoteStore } from './stores/useNoteStore';
 import { useFavoriteStore } from './stores/useFavoriteStore';
+import { useAnswerStore } from './stores/useAnswerStore';
 import { useKeyboardShortcuts, globalShortcuts } from './hooks/useKeyboardShortcuts';
 import { allQuestions } from './data';
 import './styles/themes.css';
@@ -106,6 +107,7 @@ const DataInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const { loadReviewQueue, reviewQueue, shouldNotify, updateLastNotified } = useReviewStore();
   const { loadNotes } = useNoteStore();
   const { loadFolders, loadFavorites, folders, migrateFromUserStore } = useFavoriteStore();
+  const { loadAnswers } = useAnswerStore();
   const { favorites } = useUserStore();
   const [showReminder, setShowReminder] = useState(false);
 
@@ -121,10 +123,13 @@ const DataInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) 
       
       // 加载复习队列
       await loadReviewQueue();
+      
+      // 加载已保存的答案
+      await loadAnswers();
     };
     
     initData();
-  }, [loadNotes, loadFolders, loadFavorites, loadReviewQueue]);
+  }, [loadNotes, loadFolders, loadFavorites, loadReviewQueue, loadAnswers]);
 
   // 迁移旧数据（仅首次）
   useEffect(() => {

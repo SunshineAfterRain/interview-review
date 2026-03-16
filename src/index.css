@@ -820,6 +820,26 @@ a:hover {
   font-size: var(--text-base);
   font-family: var(--font-sans);
   font-weight: var(--font-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.save-status {
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.save-status.saving {
+  color: var(--color-warning);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.save-status.saved {
+  color: var(--color-success);
+  background: rgba(16, 185, 129, 0.1);
 }
 
 .answer-editor-container {
