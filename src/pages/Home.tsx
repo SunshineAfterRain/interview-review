@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CategoryNav } from '../components/CategoryNav';
 import { QuestionCard } from '../components/QuestionCard';
 import { allQuestions } from '../data';
 import { Category, DIFFICULTY_LABELS } from '../types/question';
+import { useAnswerStore } from '../stores/useAnswerStore';
 import './Home.css';
 
 // 每页显示的题目数量
@@ -24,6 +25,8 @@ export const Home: React.FC = () => {
   const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
+  
+  const { getAnswer, answers } = useAnswerStore();
 
   // 计算各分类题目数量
   const questionCounts = useMemo(() => {
@@ -60,6 +63,16 @@ export const Home: React.FC = () => {
 
   // 总页数
   const totalPages = Math.ceil(filteredQuestions.length / PAGE_SIZE);
+  
+  // 自动展开有答案的题目（首次加载时）
+  useEffect(() => {
+    // 检查当前页是否有答案的题目
+    const questionsWithAnswers = paginatedQuestions.filter(q => getAnswer(q.id));
+    if (questionsWithAnswers.length > 0 && !expandedQuestion) {
+      // 自动展开第一个有答案的题目
+      setExpandedQuestion(questionsWithAnswers[0].id);
+    }
+  }, [answers, currentPage, paginatedQuestions]);
 
   // 当筛选条件改变时重置页码
   const resetPage = () => setCurrentPage(1);

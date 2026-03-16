@@ -79,6 +79,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const handleScoreCalculated = (score: ScoreResult) => {
     setCodeScore(score);
     setShowScorePanel(true);
+    
+    // 根据分数自动更新状态
+    if (score.totalScore >= 60) {
+      updateProgress(question.id, 'mastered');
+    } else {
+      updateProgress(question.id, 'learning');
+    }
   };
 
   const handleTheorySubmit = () => {
@@ -86,7 +93,63 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
       // 提交前立即保存
       saveAnswer(question.id, userAnswer);
       setShowScorePanel(true);
+      
+      // 理论题评分后自动更新状态
+      const score = scoreTheoryAnswer(userAnswer, question.answer);
+      if (score.totalScore >= 60) {
+        updateProgress(question.id, 'mastered');
+      } else {
+        updateProgress(question.id, 'learning');
+      }
     }
+  };
+  
+  // 理论题评分函数（从 ScorePanel 复制）
+  const scoreTheoryAnswer = (userAnswer: string, correctAnswer: string) => {
+    const userKeywords = extractKeywords(userAnswer);
+    const correctKeywords = extractKeywords(correctAnswer);
+    
+    const matchedKeywords = userKeywords.filter(k => 
+      correctKeywords.some(ck => ck.includes(k) || k.includes(ck))
+    );
+    const coverage = correctKeywords.length > 0 
+      ? matchedKeywords.length / correctKeywords.length 
+      : 0;
+    
+    const completenessScore = Math.round(coverage * 40);
+    const accuracyScore = Math.round(
+      (coverage * 0.7 + Math.min(userAnswer.length / correctAnswer.length, 1) * 0.3) * 30
+    );
+    const structureScore = analyzeStructure(userAnswer);
+    const clarityScore = Math.round(structureScore * 20);
+    const keywordScore = Math.round(Math.min(matchedKeywords.length / 5, 1) * 10);
+    
+    return {
+      totalScore: completenessScore + accuracyScore + clarityScore + keywordScore,
+      maxScore: 100,
+      dimensions: [],
+      passedTests: matchedKeywords.length,
+      totalTests: correctKeywords.length,
+      suggestions: []
+    };
+  };
+  
+  const extractKeywords = (text: string): string[] => {
+    const stopWords = new Set(['的', '是', '在', '和', '了', '有', '不', '这', '我', '他', '她', '它', '们', '个', '中', '上', '下', '为', '以', '于', '到', '从', '时', '也', '就', '都', '而', '及', '与', '或', '但', '如', '若', '因', '被', '让', '把', '给', '向', '对', '能', '会', '可以', '需要', '应该', '必须', '可能', '如果', '那么', '因为', '所以', '但是', '然而', '或者', '以及', '例如', '比如', '通过', '使用', '实现', '方法', '功能', '一种', '一个', '这个', '那个', '这些', '那些', '什么', '怎么', '如何', '为什么', '哪', '哪有']);
+    return text.toLowerCase()
+      .replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 1 && !stopWords.has(word))
+      .slice(0, 20);
+  };
+  
+  const analyzeStructure = (text: string): number => {
+    let score = 0;
+    if (text.includes('\n')) score += 0.3;
+    if (text.includes('。') || text.includes('.')) score += 0.2;
+    if (text.includes('，') || text.includes(',')) score += 0.2;
+    if (text.length > 50) score += 0.3;
+    return Math.min(score, 1);
   };
 
   const handleProgressChange = (status: 'not_started' | 'learning' | 'mastered') => {
